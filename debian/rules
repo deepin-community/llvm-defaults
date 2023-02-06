@@ -79,21 +79,24 @@ REL_NO_120   := $(shell expr $(VMINOR) - 0)$(REL_EXT)
 # llvm-defaults 0.53 is the first version for 13.
 REL_NO_130   := $(shell expr $(VMINOR) - 0)$(REL_EXT)
 
+# llvm-defaults 0.53 is the first version for 14.
+REL_NO_140   := $(shell expr $(VMINOR) - 0)$(REL_EXT)
+
 
 # minimum required version
 
-REQV            := (>= 13~)
+REQV            := (>= 14~)
 
-CURRENT_VERSION := 13.0
+CURRENT_VERSION := 14.0
 
 # architecture dependent variables
 include /usr/share/dpkg/architecture.mk
 
 # complete version number, including the release
-CV_LLVM		:= 1:$(CURRENT_VERSION)-$(REL_NO_130)
+CV_LLVM		:= 1:$(CURRENT_VERSION)-$(REL_NO_140)
 
 distribution := $(shell lsb_release -is)
-all_packages   := llvm llvm-runtime llvm-dev clang clang-tools libclang-cpp-dev libclang1 libclang-dev clang-format clang-tidy clangd python3-clang libomp5 libomp-dev libc++1 libc++-dev libc++abi1 libc++abi-dev libllvm-ocaml-dev
+all_packages   := llvm llvm-runtime llvm-dev clang clang-tools libclang-cpp-dev libclang1 libclang-dev clang-format clang-tidy clangd python3-clang libomp5 libomp-dev libc++1 libc++-dev libc++abi1 libc++abi-dev libllvm-ocaml-dev libclang-rt-dev libc++-dev-wasm32 libclang-rt-dev-wasm32 libclang-rt-dev-wasm64
 no_packages    :=
 
 EXTRA_SUPPORTED=amd64 arm64 armel armhf i386 ppc64el kfreebsd-amd64 kfreebsd-i386 s390 s390x sparc alpha hppa m68k powerpcspe ppc64 sh4 sparc64 x32
@@ -103,11 +106,11 @@ else
     no_packages += lldb liblldb-dev python3-lldb
 endif
 
-LLD_SUPPORTED=amd64 arm64 armel armhf i386 mips mipsel mips64el ppc64el kfreebsd-amd64 kfreebsd-i386 s390 sparc alpha hppa m68k powerpcspe ppc64 sh4 sparc64 x32
+LLD_SUPPORTED=amd64 arm64 armel armhf i386 mips mipsel mips64el ppc64el kfreebsd-amd64 kfreebsd-i386 s390 sparc alpha hppa m68k powerpcspe ppc64 sh4 sparc64 x32 riscv64
 ifneq (,$(filter $(DEB_HOST_ARCH),$(LLD_SUPPORTED)))
-    all_packages += lld
+    all_packages += lld liblld-dev
 else
-    no_packages += lld
+    no_packages += lld liblld-dev
 endif
 
 
@@ -184,7 +187,7 @@ install: build README substvars
 		llvm-dwp llvm-exegesis llvm-lib llvm-lto llvm-lto2 llvm-mca llvm-modextract \
 		llvm-mt llvm-objcopy llvm-opt-report llvm-pdbutil llvm-rc llvm-readelf \
 		llvm-readobj llvm-split llvm-stress llvm-strings llvm-strip llvm-undname \
-		llvm-xray sanstats opt \
+		llvm-xray sanstats opt llvm-addr2line llvm-reduce \
 		; do \
 		dh_link -pllvm \
 			/usr/lib/llvm-$(PV_LLVM)/bin/$$bin \
@@ -198,11 +201,15 @@ install: build README substvars
 			/usr/bin/$$bin ; \
 	done
 # To know if there is a manpage or not
+# L="LIST ABOVE"
 # for f in $L; do if test -f /usr/share/man/man1/$f-7.1.gz; then echo $f; fi; done|tr "\n" " "
 	for man in \
-		llvm-ranlib llvm-dwarfdump \
-		llvm-objdump llvm-rtdyld llvm-size llvm-mc \
-		; do \
+		bugpoint llc llvm-ar llvm-as llvm-bcanalyzer llvm-config llvm-cov \
+		llvm-diff llvm-dis llvm-dwarfdump llvm-extract llvm-link llvm-mc \
+		llvm-nm llvm-objdump llvm-ranlib llvm-rtdyld llvm-size llvm-tblgen \
+		llvm-profdata llvm-symbolizer dsymutil llvm-cxxfilt llvm-exegesis \
+		llvm-lib llvm-mca llvm-objcopy llvm-pdbutil llvm-readelf llvm-readobj \
+		llvm-stress llvm-strings llvm-strip opt llvm-addr2line; do \
 		dh_link -pllvm \
 			/usr/share/man/man1/$$man-$(PV_LLVM).1.gz \
 			/usr/share/man/man1/$$man.1.gz ; \
@@ -297,6 +304,11 @@ install: build README substvars
 		/usr/lib/llvm-$(PV_LLVM)/lib/$$lib /usr/lib/$$lib; \
 	done
 
+	: # liblld-dev
+	dh_installdirs -pliblld-dev \
+		/usr/include
+	dh_link -pliblld-dev \
+		/usr/lib/llvm-$(PV_LLVM)/include/lldb /usr/include/lld \
 
 	: libllvm-ocaml-dev
 	dh_installdirs -plibllvm-ocaml-dev \
