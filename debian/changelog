@@ -1,3 +1,83 @@
+llvm-defaults (0.55.5) unstable; urgency=medium
+
+  * Create new dependencies packages - request for Firefox
+    - libclang-rt-dev => libclang-rt-14-dev
+    - libclang-rt-dev-wasm32 => libclang-rt-14-dev-wasm32
+    - libclang-rt-dev-wasm64 => libclang-rt-14-dev-wasm64
+    - libc++-dev-wasm32 => libc++-14-dev-wasm32
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Mon, 16 Jan 2023 09:36:09 +0100
+
+llvm-defaults (0.55.4) unstable; urgency=medium
+
+  * remove llvm-reduce symlink manpage (Closes: #1026967)
+  * Update lintian override info to new format:
+    + debian/clang-tidy.lintian-overrides: line 1
+    + debian/clang-format.lintian-overrides: line 1
+  * Trim trailing whitespace.
+  * Update standards version to 4.6.2, no changes needed.
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Thu, 05 Jan 2023 23:14:50 +0100
+
+llvm-defaults (0.55.3) unstable; urgency=medium
+
+  * Install llvm-reduce in llvm-defaults
+    Upstream 59303
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Mon, 12 Dec 2022 14:34:50 +0100
+
+llvm-defaults (0.55.2) unstable; urgency=medium
+
+  * Update standards version to 4.6.1, no changes needed.
+  * Add a meta package for liblld-dev (Closes: #1003109)
+  * Update of the descriptions (more consistency)
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Tue, 04 Oct 2022 18:24:46 +0200
+
+llvm-defaults (0.55.1) unstable; urgency=medium
+
+  * Add the llvm-addr2line symlink (Closes: #1016163)
+  * Add a bunch of symlink for manpages
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Tue, 02 Aug 2022 14:14:13 +0200
+
+llvm-defaults (0.55) unstable; urgency=medium
+
+  * Upload to unstable to default to 14
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Tue, 26 Jul 2022 10:56:20 +0200
+
+llvm-defaults (0.55~exp4) experimental; urgency=medium
+
+  * Only drop lldb* on riscv64, not built there.
+
+ -- Gianfranco Costamagna <locutusofborg@debian.org>  Tue, 24 May 2022 10:32:30 +0200
+
+llvm-defaults (0.55~exp3) experimental; urgency=medium
+
+  * Bring ocaml back on riscv64, llvm-14 looks now building it
+
+ -- Gianfranco Costamagna <locutusofborg@debian.org>  Mon, 23 May 2022 13:37:40 +0200
+
+llvm-defaults (0.55~exp2) experimental; urgency=medium
+
+  * Revert addition of riscv64 for lldb packages, llvm-14 is still
+    not building them
+
+ -- Gianfranco Costamagna <locutusofborg@debian.org>  Fri, 01 Apr 2022 22:51:10 +0200
+
+llvm-defaults (0.55~exp1) experimental; urgency=medium
+
+  [ Kasper Kantz ]
+  * Add riscv64 architecture in control
+    enable liblldb, libomp and others which are
+    currently unavailable in riscv64 repository.
+
+  [ Matthias Klose ]
+  * Default to llvm-14.
+
+ -- Gianfranco Costamagna <locutusofborg@debian.org>  Thu, 31 Mar 2022 07:05:21 +0200
+
 llvm-defaults (0.54) unstable; urgency=medium
 
   * Disable lldb on mips*. it was done in 13.0.0-8

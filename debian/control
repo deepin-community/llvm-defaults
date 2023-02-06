@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: LLVM Packaging Team <pkg-llvm-team@lists.alioth.debian.org>
 Uploaders: Matthias Klose <doko@debian.org>, Sylvestre Ledru <sylvestre@debian.org>,
  Gianfranco Costamagna <locutusofborg@debian.org>
-Standards-Version: 4.6.0
+Standards-Version: 4.6.2
 Rules-Requires-Root: no
 Build-Depends: debhelper-compat (= 13), dpkg-dev (>= 1.13.9), lsb-release,
  m4
@@ -43,7 +43,7 @@ Description: Low-Level Virtual Machine (LLVM), libraries and headers
  This is a dependency package providing the default libraries and headers.
 
 Package: libllvm-ocaml-dev
-Architecture: amd64 arm64 armhf
+Architecture: amd64 arm64 armhf riscv64
 Section: ocaml
 Depends: llvm-runtime (= ${binary:Version}), libllvm-${pv:llvm}-ocaml-dev ${reqv:llvm}, ${misc:Depends}
 Description: Low-Level Virtual Machine (LLVM), bindings for OCaml
@@ -139,7 +139,7 @@ Description: Tool to format C/C++/Obj-C code
 Package: libclang-cpp-dev
 Architecture: any
 Section: libdevel
-Depends: ${shlibs:Depends}, ${misc:Depends}, ${dep:devlibs},
+Depends: ${shlibs:Depends}, ${misc:Depends},
  libclang-cpp${pv:llvm}-dev ${reqv:llvm}
 Description: C++ interface to the clang library
  Clang project is a C, C++, Objective C and Objective C++ front-end
@@ -154,7 +154,7 @@ Description: C++ interface to the clang library
 Package: libclang1
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, ${dep:devlibs}, libclang1-${pv:llvm} ${reqv:llvm}
+Depends: ${shlibs:Depends}, ${misc:Depends}, libclang1-${pv:llvm} ${reqv:llvm}
 Pre-Depends: ${misc:Pre-Depends}
 Multi-Arch: same
 Description: C, C++ and Objective-C compiler (LLVM based)
@@ -176,7 +176,7 @@ Description: C, C++ and Objective-C compiler (LLVM based)
 Package: libclang-dev
 Architecture: any
 Section: libdevel
-Depends: ${shlibs:Depends}, ${misc:Depends}, ${dep:devlibs},
+Depends: ${shlibs:Depends}, ${misc:Depends},
  libclang-${pv:llvm}-dev ${reqv:llvm}
 Description: clang library - Development package
  Clang project is a C, C++, Objective C and Objective C++ front-end
@@ -189,10 +189,70 @@ Description: clang library - Development package
  This is a dependency package providing the default libclang libraries and
  headers.
 
+Package: libclang-rt-dev
+Architecture: any
+Section: libdevel
+Depends: ${shlibs:Depends}, ${misc:Depends},
+ libclang-rt-${pv:llvm}-dev ${reqv:llvm}
+Description: Compiler-rt - Development package
+ This package provides various libraries:
+ .
+   * builtins - Simple libraries that provide implementation of the
+     low-level target-specific hooks required by code generation
+     and other runtime components.
+   * sanitizer runtimes - AddressSanitizer, ThreadSanitizer,
+     UndefinedBehaviorSanitizer, MemorySanitizer, LeakSanitizer
+     DataFlowSanitizer, etc
+   * profile - Library which is used to collect coverage information.
+ .
+ This is a dependency package providing the default compiler-rt libraries and
+ headers.
+
+Package: libclang-rt-dev-wasm32
+Architecture: any
+Section: libdevel
+Depends: ${shlibs:Depends}, ${misc:Depends},
+ libclang-rt-${pv:llvm}-dev-wasm32 ${reqv:llvm}
+Description: Compiler-rt - wasm32 builtins
+ Provides the compiler-rt builtins for WebAssembly 32 bits
+ .
+ This is a dependency package providing the default libclang wasm32 library.
+
+Package: libclang-rt-dev-wasm64
+Architecture: any
+Section: libdevel
+Depends: ${shlibs:Depends}, ${misc:Depends},
+ libclang-rt-${pv:llvm}-dev-wasm64 ${reqv:llvm}
+Description: Compiler-rt - wasm64 builtins
+ Provides the compiler-rt builtins for WebAssembly 64 bits
+ .
+ This is a dependency package providing the default libclang wasm64 library.
+
+Package: libc++-dev-wasm32
+Architecture: any
+Section: libdevel
+Depends: ${shlibs:Depends}, ${misc:Depends},
+ libc++-${pv:llvm}-dev-wasm32
+Description: LLVM C++ Standard library (WASI)
+ libc++ is another implementation of the C++ standard library
+ .
+ Features and Goals
+ .
+   * Correctness as defined by the C++ standards.
+   * Fast execution.
+   * Minimal memory use.
+   * Fast compile times.
+   * ABI compatibility with gcc's libstdc++ for some low-level features such
+     as exception objects, rtti and memory allocation.
+   * Extensive unit tests.
+ .
+ This is a dependency package providing the default 32-bit WebAssembly
+ System Interface.
+
 Package: liblldb-dev
 Architecture: any
 Section: libdevel
-Depends: ${shlibs:Depends}, ${misc:Depends}, ${dep:devlibs},
+Depends: ${shlibs:Depends}, ${misc:Depends},
  liblldb-${pv:llvm}-dev ${reqv:llvm}
 Multi-Arch: same
 Description: Next generation, high-performance debugger, header files
@@ -223,6 +283,8 @@ Description: LLVM-based linker
  LLD is a new, high-performance linker. It is built as a set of reusable
  components which highly leverage existing libraries in the larger LLVM
  Project.
+ .
+ This is a dependency package providing the lld linker.
 
 Package: python3-clang
 Section: python
@@ -239,7 +301,7 @@ Description: Clang Python Bindings
  Clang implements all of the ISO C++ 1998, 11 and 14 standards and also
  provides most of the support of C++17.
  .
- This binding package provides access to the Clang compiler and libraries.
+ This is a dependency package providing the Python binding to Clang.
 
 Package: python3-lldb
 Section: python
@@ -252,30 +314,32 @@ Description: Next generation, high-performance debugger, python lib
  reusable components which highly leverage existing libraries in the larger LLVM
  Project, such as the Clang expression parser and LLVM disassembler.
  .
- This binding package provides access to lldb.
+ This is a dependency package providing the Python binding to lldb.
 
 Package: libomp-dev
 Section: libdevel
-Architecture: amd64 arm64 armhf i386 mips64el ppc64el ppc64
-Depends: ${shlibs:Depends}, ${misc:Depends}, ${dep:devlibs},
+Architecture: amd64 arm64 armhf i386 mips64el ppc64el ppc64 riscv64
+Depends: ${shlibs:Depends}, ${misc:Depends},
  libomp-${pv:llvm}-dev ${reqv:llvm}
 Multi-Arch: same
 Description: LLVM OpenMP runtime - dev package
  The runtime is the part of the OpenMP implementation that your code is
  linked against, and that manages the multiple threads in an OpenMP program
  while it is executing.
+ .
  This is a dependency package providing the default LLVM OpenMP dev
  package.
 
 Package: libomp5
 Multi-Arch: same
 Section: libs
-Architecture: amd64 arm64 armhf i386 mips64el ppc64el ppc64
+Architecture: amd64 arm64 armhf i386 mips64el ppc64el ppc64 riscv64
 Depends: libomp5-${pv:llvm} ${reqv:llvm}, ${shlibs:Depends}, ${misc:Depends}
 Description: LLVM OpenMP runtime
  The runtime is the part of the OpenMP implementation that your code is
  linked against, and that manages the multiple threads in an OpenMP program
  while it is executing.
+ .
  This is a dependency package providing the default LLVM OpenMP runtime.
 
 Package: libc++1
@@ -296,6 +360,7 @@ Description: LLVM C++ Standard library
    * ABI compatibility with gcc's libstdc++ for some low-level features such
      as exception objects, rtti and memory allocation.
    * Extensive unit tests.
+ .
  This is a dependency package providing the default LLVM C++ Standard library.
 
 Package: libc++-dev
@@ -315,6 +380,7 @@ Description: LLVM C++ Standard library (development files)
    * ABI compatibility with gcc's libstdc++ for some low-level features such
      as exception objects, rtti and memory allocation.
    * Extensive unit tests.
+ .
  This is a dependency package providing the default LLVM C++ Standard library
  development files.
 
@@ -332,6 +398,7 @@ Description: LLVM low level support for a standard C++ library
  .
    * Correctness as defined by the C++ standards.
    * Provide a portable sublayer to ease the porting of libc++
+ .
  This is a dependency package providing low level support to
  LLVM C++ Standard library.
 
@@ -348,5 +415,20 @@ Description: LLVM low level support for a standard C++ library (development file
  .
    * Correctness as defined by the C++ standards.
    * Provide a portable sublayer to ease the porting of libc++
- This is the development package providing low level support to
- LLVM C++ Standard library.
+ .
+ This is a dependency package providing low level support to
+ dev LLVM C++ Standard library.
+
+
+Package: liblld-dev
+Architecture: any
+Section: libdevel
+Depends: ${shlibs:Depends}, ${misc:Depends},
+ liblld-${pv:llvm}-dev ${reqv:llvm}
+Multi-Arch: same
+Description: LLVM-based linker, library
+ LLD is a new, high-performance linker. It is built as a set of reusable
+ components which highly leverage existing libraries in the larger LLVM
+ Project.
+ .
+ This is a dependency package providing the default liblld-dev package.
