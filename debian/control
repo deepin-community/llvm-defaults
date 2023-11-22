@@ -254,6 +254,7 @@ Architecture: any
 Section: libdevel
 Depends: ${shlibs:Depends}, ${misc:Depends},
  liblldb-${pv:llvm}-dev ${reqv:llvm}
+Breaks: lldb-11, python3-lldb-11
 Multi-Arch: same
 Description: Next generation, high-performance debugger, header files
  LLDB is a next generation, high-performance debugger. It is built as a set of
@@ -266,6 +267,7 @@ Package: lldb
 Architecture: any
 Depends: lldb-${pv:llvm} ${reqv:llvm}, ${misc:Depends}
 Pre-Depends: ${misc:Pre-Depends}
+Breaks: lldb-11, python3-lldb-11
 Multi-Arch: same
 Description: Next generation, high-performance debugger
  LLDB is a next generation, high-performance debugger. It is built as a set of
@@ -285,6 +287,19 @@ Description: LLVM-based linker
  Project.
  .
  This is a dependency package providing the lld linker.
+
+Package: llvm-bolt
+Architecture: any
+Depends: bolt-${pv:llvm} ${reqv:llvm}, ${misc:Depends}
+Pre-Depends: ${misc:Pre-Depends}
+Multi-Arch: same
+Description: Post-link optimizer
+ It achieves the improvements by optimizing application's code layout based on
+ execution profile gathered by sampling profiler.
+ .
+ This is a dependency package providing bolt.
+ .
+ This package is not called bolt because it is already used.
 
 Package: python3-clang
 Section: python
@@ -308,7 +323,7 @@ Section: python
 Architecture: any
 Depends: python3-lldb-${pv:llvm} ${reqv:llvm}, ${misc:Depends}
 Replaces: python-lldb (<< 0.49~exp2)
-Breaks: python-lldb (<< 0.49~exp2)
+Breaks: python-lldb (<< 0.49~exp2), python3-lldb-11
 Description: Next generation, high-performance debugger, python lib
  LLDB is a next generation, high-performance debugger. It is built as a set of
  reusable components which highly leverage existing libraries in the larger LLVM
@@ -348,6 +363,7 @@ Architecture: any
 Multi-Arch: same
 Pre-Depends: ${misc:Pre-Depends}
 Depends: libc++1-${pv:llvm} ${reqv:llvm}, ${shlibs:Depends}, ${misc:Depends}
+Breaks: libc++1-11, libc++abi1-11
 Description: LLVM C++ Standard library
  libc++ is another implementation of the C++ standard library.
  .
@@ -368,6 +384,7 @@ Section: libdevel
 Architecture: any
 Multi-Arch: same
 Depends: libc++-${pv:llvm}-dev ${reqv:llvm}, ${misc:Depends}
+Breaks: libc++1-11, libc++abi1-11
 Description: LLVM C++ Standard library (development files)
  libc++ is another implementation of the C++ standard library
  .
@@ -390,6 +407,7 @@ Architecture: any
 Multi-Arch: same
 Pre-Depends: ${misc:Pre-Depends}
 Depends: libc++abi1-${pv:llvm} ${reqv:llvm}, ${shlibs:Depends}, ${misc:Depends}
+Breaks: libc++abi1-11
 Description: LLVM low level support for a standard C++ library
  libc++abi is another implementation of low level support for a standard C++
  library.
@@ -407,6 +425,7 @@ Section: libdevel
 Architecture: any
 Multi-Arch: same
 Depends: libc++abi-${pv:llvm}-dev ${reqv:llvm}, ${misc:Depends}
+Breaks: libc++abi1-11
 Description: LLVM low level support for a standard C++ library (development files)
  libc++abi is another implementation of low level support for a standard C++
  library.
@@ -418,7 +437,6 @@ Description: LLVM low level support for a standard C++ library (development file
  .
  This is a dependency package providing low level support to
  dev LLVM C++ Standard library.
-
 
 Package: liblld-dev
 Architecture: any
@@ -432,3 +450,40 @@ Description: LLVM-based linker, library
  Project.
  .
  This is a dependency package providing the default liblld-dev package.
+
+Package: flang
+Architecture: any
+Depends: flang-${pv:llvm} ${reqv:llvm}, ${misc:Depends}
+Description: Fortran compiler
+ Ground-up implementation of a Fortran front end written in
+ modern C++.
+ .
+ While it is capable of generating executables for a number
+ of examples, some functionalities are still missing.
+
+Package: libflang-dev
+Architecture: any
+Depends: libflang-${pv:llvm}-dev ${reqv:llvm}, ${misc:Depends}
+Description: Flang library - Development package
+ Ground-up implementation of a Fortran front end written in
+ modern C++.
+ .
+ While it is capable of generating executables for a number
+ of examples, some functionalities are still missing.
+ .
+ This package contains the flang libraries and headers.
+ .
+ This is a dependency package providing the default libflang-dev package.
+
+Package: libbolt-dev
+Architecture: any
+Section: libdevel
+Depends: ${shlibs:Depends}, ${misc:Depends},
+ libbolt-${pv:llvm}-dev ${reqv:llvm}
+Multi-Arch: same
+Description: Post-link optimizer
+ It achieves the improvements by optimizing application's code layout based on
+ execution profile gathered by sampling profiler.
+ .
+ This is a dependency package providing the default libbolt-dev package.
+

@@ -82,21 +82,26 @@ REL_NO_130   := $(shell expr $(VMINOR) - 0)$(REL_EXT)
 # llvm-defaults 0.53 is the first version for 14.
 REL_NO_140   := $(shell expr $(VMINOR) - 0)$(REL_EXT)
 
+# llvm-defaults 0.56 is the first version for 15.
+REL_NO_150   := $(shell expr $(VMINOR) - 0)$(REL_EXT)
+
+# llvm-defaults 0.57 is the first version for 16.
+REL_NO_160   := $(shell expr $(VMINOR) - 0)$(REL_EXT)
 
 # minimum required version
 
-REQV            := (>= 14~)
+REQV            := (>= 16~)
 
-CURRENT_VERSION := 14.0
+CURRENT_VERSION := 16.0
 
 # architecture dependent variables
 include /usr/share/dpkg/architecture.mk
 
 # complete version number, including the release
-CV_LLVM		:= 1:$(CURRENT_VERSION)-$(REL_NO_140)
+CV_LLVM		:= 1:$(CURRENT_VERSION)-$(REL_NO_160)
 
 distribution := $(shell lsb_release -is)
-all_packages   := llvm llvm-runtime llvm-dev clang clang-tools libclang-cpp-dev libclang1 libclang-dev clang-format clang-tidy clangd python3-clang libomp5 libomp-dev libc++1 libc++-dev libc++abi1 libc++abi-dev libllvm-ocaml-dev libclang-rt-dev libc++-dev-wasm32 libclang-rt-dev-wasm32 libclang-rt-dev-wasm64
+all_packages   := llvm llvm-runtime llvm-dev clang clang-tools libclang-cpp-dev libclang1 libclang-dev clang-format clang-tidy clangd python3-clang libomp5 libomp-dev libc++1 libc++-dev libc++abi1 libc++abi-dev libllvm-ocaml-dev libclang-rt-dev libc++-dev-wasm32 libclang-rt-dev-wasm32 libclang-rt-dev-wasm64 flang
 no_packages    :=
 
 EXTRA_SUPPORTED=amd64 arm64 armel armhf i386 ppc64el kfreebsd-amd64 kfreebsd-i386 s390 s390x sparc alpha hppa m68k powerpcspe ppc64 sh4 sparc64 x32
@@ -106,11 +111,25 @@ else
     no_packages += lldb liblldb-dev python3-lldb
 endif
 
-LLD_SUPPORTED=amd64 arm64 armel armhf i386 mips mipsel mips64el ppc64el kfreebsd-amd64 kfreebsd-i386 s390 sparc alpha hppa m68k powerpcspe ppc64 sh4 sparc64 x32 riscv64
+LLD_SUPPORTED=amd64 arm64 armel armhf i386 mips mipsel mips64el ppc64el kfreebsd-amd64 kfreebsd-i386 s390 s390x sparc alpha hppa m68k powerpcspe ppc64 sh4 sparc64 x32 riscv64
 ifneq (,$(filter $(DEB_HOST_ARCH),$(LLD_SUPPORTED)))
     all_packages += lld liblld-dev
 else
     no_packages += lld liblld-dev
+endif
+
+FLANG_SUPPORTED=amd64 arm64 mips64el ppc64el kfreebsd-amd64 ppc64 sparc64 riscv64
+ifneq (,$(filter $(DEB_HOST_ARCH),$(FLANG_SUPPORTED)))
+    all_packages += flang libflang-dev
+else
+    no_packages += flang libflang-dev
+endif
+
+BOLT_SUPPORTED=amd64
+ifneq (,$(filter $(DEB_HOST_ARCH),$(BOLT_SUPPORTED)))
+    all_packages += llvm-bolt libbolt-dev
+else
+    no_packages += llvm-bolt libbolt-dev
 endif
 
 
@@ -308,15 +327,15 @@ install: build README substvars
 	dh_installdirs -pliblld-dev \
 		/usr/include
 	dh_link -pliblld-dev \
-		/usr/lib/llvm-$(PV_LLVM)/include/lldb /usr/include/lld \
+		/usr/lib/llvm-$(PV_LLVM)/include/lld /usr/include/lld \
 
-	: libllvm-ocaml-dev
+	: # libllvm-ocaml-dev
 	dh_installdirs -plibllvm-ocaml-dev \
 		/usr/lib/ocaml/METAS
 	dh_link -plibllvm-ocaml-dev \
 		/usr/lib/ocaml/META.llvm /usr/lib/ocaml/METAS/META.llvm
 
-#  clang
+	: #  clang
 
 	dh_installdirs -pclang \
 		usr/bin usr/share/man/man1
@@ -413,6 +432,24 @@ install: build README substvars
 	dh_link -plld \
 			/usr/bin/wasm-ld-$(PV_LLVM) \
 			/usr/bin/wasm-ld
+
+# flang
+	for bin in \
+	bbc f18-parse-demo fir-opt flang-new flang-to-external-fc tco \
+	; do \
+	dh_link -pflang \
+		/usr/bin/$$bin-$(PV_LLVM) \
+		/usr/bin/$$bin ; \
+	done
+
+# bolt
+	for bin in \
+	llvm-bolt llvm-bolt-heatmap llvm-boltdiff merge-fdata perf2bolt \
+	; do \
+	dh_link -pllvm-bolt \
+		/usr/bin/$$bin-$(PV_LLVM) \
+		/usr/bin/$$bin ; \
+	done
 
 
 nopkgs := $(foreach p, $(no_packages),-N$(p))

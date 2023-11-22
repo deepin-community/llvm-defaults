@@ -1,3 +1,73 @@
+llvm-defaults (0.57) unstable; urgency=medium
+
+  * Upload to unstable. See bug #1050071 for the transition
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Wed, 13 Sep 2023 15:35:38 +0200
+
+llvm-defaults (0.57~exp5) experimental; urgency=medium
+
+  * Really build llvm-bolt package
+
+ -- Gianfranco Costamagna <locutusofborg@debian.org>  Tue, 12 Sep 2023 13:37:06 +0200
+
+llvm-defaults (0.57~exp4) experimental; urgency=medium
+
+  * Rename bolt to llvm-bolt (Closes: #1041871)
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Sat, 09 Sep 2023 22:17:18 +0200
+
+llvm-defaults (0.57~exp3) experimental; urgency=medium
+
+  * Revert bolt addition on amd64, breaks src:bolt (Closes: #1041871)
+
+ -- Gianfranco Costamagna <locutusofborg@debian.org>  Tue, 01 Aug 2023 07:56:03 +0200
+
+llvm-defaults (0.57~exp2) experimental; urgency=medium
+
+  [ Sylvestre Ledru ]
+  * Add libbolt-dev & bolt as packages (amd64 only)
+
+  [ Gianfranco Costamagna ]
+  * Add new libflang-dev package
+
+ -- Gianfranco Costamagna <locutusofborg@debian.org>  Tue, 18 Jul 2023 18:06:38 +0200
+
+llvm-defaults (0.57~exp1) experimental; urgency=medium
+
+  * Default to 16
+
+ -- Gianfranco Costamagna <locutusofborg@debian.org>  Wed, 22 Mar 2023 13:01:45 +0100
+
+llvm-defaults (0.56~exp3) experimental; urgency=medium
+
+  * Create a new dependency package for flang
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Sun, 29 Jan 2023 18:12:43 +0100
+
+llvm-defaults (0.56~exp2) experimental; urgency=medium
+
+  * Default to 15
+
+ -- Gianfranco Costamagna <locutusofborg@debian.org>  Tue, 17 Jan 2023 09:13:20 +0100
+
+llvm-defaults (0.55.7) unstable; urgency=medium
+
+  [ Andreas Beckmann ]
+  * Add Breaks against not co-installable packages for smoother upgrades from
+    bullseye.  (Closes: #1036580)
+  * Fix /usr/include/lld symlink.  (Closes: #1036577)
+
+  [ Sylvestre Ledru ]
+  * Silent the breaks-without-version lintian warnings
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Tue, 11 Jul 2023 13:00:54 +0200
+
+llvm-defaults (0.55.6) unstable; urgency=medium
+
+  * Add s390x in the lld supported archs
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Mon, 13 Feb 2023 23:43:35 +0100
+
 llvm-defaults (0.55.5) unstable; urgency=medium
 
   * Create new dependencies packages - request for Firefox
@@ -33,6 +103,12 @@ llvm-defaults (0.55.2) unstable; urgency=medium
   * Update of the descriptions (more consistency)
 
  -- Sylvestre Ledru <sylvestre@debian.org>  Tue, 04 Oct 2022 18:24:46 +0200
+
+llvm-defaults (0.56~exp1) experimental; urgency=medium
+
+  * Default to 15
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Tue, 02 Aug 2022 15:02:31 +0200
 
 llvm-defaults (0.55.1) unstable; urgency=medium
 
