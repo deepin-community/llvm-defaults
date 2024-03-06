@@ -104,14 +104,14 @@ distribution := $(shell lsb_release -is)
 all_packages   := llvm llvm-runtime llvm-dev clang clang-tools libclang-cpp-dev libclang1 libclang-dev clang-format clang-tidy clangd python3-clang libomp5 libomp-dev libc++1 libc++-dev libc++abi1 libc++abi-dev libllvm-ocaml-dev libclang-rt-dev libc++-dev-wasm32 libclang-rt-dev-wasm32 libclang-rt-dev-wasm64 flang
 no_packages    :=
 
-EXTRA_SUPPORTED=amd64 arm64 armel armhf i386 ppc64el kfreebsd-amd64 kfreebsd-i386 s390 s390x sparc alpha hppa m68k powerpcspe ppc64 sh4 sparc64 x32
+EXTRA_SUPPORTED=amd64 arm64 armel armhf i386 ppc64el kfreebsd-amd64 kfreebsd-i386 s390 s390x sparc alpha hppa loong64 m68k powerpcspe ppc64 sh4 sparc64 x32
 ifneq (,$(filter $(DEB_HOST_ARCH),$(EXTRA_SUPPORTED)))
     all_packages += lldb liblldb-dev python3-lldb
 else
     no_packages += lldb liblldb-dev python3-lldb
 endif
 
-LLD_SUPPORTED=amd64 arm64 armel armhf i386 mips mipsel mips64el ppc64el kfreebsd-amd64 kfreebsd-i386 s390 s390x sparc alpha hppa m68k powerpcspe ppc64 sh4 sparc64 x32 riscv64
+LLD_SUPPORTED=amd64 arm64 armel armhf i386 loong64 mips mipsel mips64el ppc64el kfreebsd-amd64 kfreebsd-i386 s390 s390x sparc alpha hppa m68k powerpcspe ppc64 sh4 sparc64 x32 riscv64
 ifneq (,$(filter $(DEB_HOST_ARCH),$(LLD_SUPPORTED)))
     all_packages += lld liblld-dev
 else
