@@ -481,9 +481,8 @@ Section: libdevel
 Depends: ${shlibs:Depends}, ${misc:Depends},
  libbolt-${pv:llvm}-dev ${reqv:llvm}
 Multi-Arch: same
-Description: Post-link optimizer
+Description: Post-link optimizer - Development package
  It achieves the improvements by optimizing application's code layout based on
  execution profile gathered by sampling profiler.
  .
  This is a dependency package providing the default libbolt-dev package.
-

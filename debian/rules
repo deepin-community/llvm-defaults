@@ -88,17 +88,20 @@ REL_NO_150   := $(shell expr $(VMINOR) - 0)$(REL_EXT)
 # llvm-defaults 0.57 is the first version for 16.
 REL_NO_160   := $(shell expr $(VMINOR) - 0)$(REL_EXT)
 
+# llvm-defaults 0.58 is the first version for 17.
+REL_NO_170   := $(shell expr $(VMINOR) - 0)$(REL_EXT)
+
 # minimum required version
 
-REQV            := (>= 16~)
+REQV            := (>= 17~)
 
-CURRENT_VERSION := 16.0
+CURRENT_VERSION := 17.0
 
 # architecture dependent variables
 include /usr/share/dpkg/architecture.mk
 
 # complete version number, including the release
-CV_LLVM		:= 1:$(CURRENT_VERSION)-$(REL_NO_160)
+CV_LLVM		:= 1:$(CURRENT_VERSION)-$(REL_NO_170)
 
 distribution := $(shell lsb_release -is)
 all_packages   := llvm llvm-runtime llvm-dev clang clang-tools libclang-cpp-dev libclang1 libclang-dev clang-format clang-tidy clangd python3-clang libomp5 libomp-dev libc++1 libc++-dev libc++abi1 libc++abi-dev libllvm-ocaml-dev libclang-rt-dev libc++-dev-wasm32 libclang-rt-dev-wasm32 libclang-rt-dev-wasm64 flang
