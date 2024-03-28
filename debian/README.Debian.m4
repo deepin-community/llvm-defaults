@@ -77,5 +77,6 @@ Maintainers of these packages
 
 Matthias Klose <doko@debian.org>
 Sylvestre Ledru <sylvestre@debian.org>
+Gianfranco Costamagna <locutusofborg@debian.org>
 
 ===============================================================================
