@@ -91,48 +91,89 @@ REL_NO_160   := $(shell expr $(VMINOR) - 0)$(REL_EXT)
 # llvm-defaults 0.58 is the first version for 17.
 REL_NO_170   := $(shell expr $(VMINOR) - 0)$(REL_EXT)
 
+# llvm-defaults 0.59 is the first version for 18.
+REL_NO_180   := $(shell expr $(VMINOR) - 0)$(REL_EXT)
+
+# llvm-defaults 0.60 is the first version for 19.
+REL_NO_190   := $(shell expr $(VMINOR) - 0)$(REL_EXT)
+
+# llvm-defaults 0.60ubuntu1~ppa1 is the first version for 20.
+REL_NO_200   := $(shell expr $(VMINOR) - 0)$(REL_EXT)
+
+# llvm-defaults 0.63 is the first version for 21.
+REL_NO_210   := $(shell expr $(VMINOR) - 0)$(REL_EXT)
+
 # minimum required version
 
-REQV            := (>= 17~)
+LV		= 21
+REQV            = (>= 1:$(LV).1.6-1)
+CURRENT_VERSION = $(LV).1.6
 
-CURRENT_VERSION := 17.0
+# complete version number, including the release
+CV_LLVM		:= 1:$(CURRENT_VERSION)-$(REL_NO_210)
 
 # architecture dependent variables
 include /usr/share/dpkg/architecture.mk
 
-# complete version number, including the release
-CV_LLVM		:= 1:$(CURRENT_VERSION)-$(REL_NO_170)
+# get some build information from llvm-toolchain-$(LV)
+ifeq (,$(wildcard /usr/lib/llvm-$(LV)/share/debian_config.mk))
+  $(error file /usr/lib/llvm-$(LV)/share/debian_config.mk not found, install llvm-$(LV)-dev)
+else
+include /usr/lib/llvm-$(LV)/share/debian_config.mk
+endif
 
 distribution := $(shell lsb_release -is)
-all_packages   := llvm llvm-runtime llvm-dev clang clang-tools libclang-cpp-dev libclang1 libclang-dev clang-format clang-tidy clangd python3-clang libomp5 libomp-dev libc++1 libc++-dev libc++abi1 libc++abi-dev libllvm-ocaml-dev libclang-rt-dev libc++-dev-wasm32 libclang-rt-dev-wasm32 libclang-rt-dev-wasm64 flang
+all_packages   := llvm llvm-runtime llvm-dev \
+	clang clang-tools libclang-cpp-dev libclang-dev clang-format clang-tidy clangd \
+	python3-clang libomp-dev libc++-dev libc++abi-dev libllvm-ocaml-dev libclang-rt-dev \
+	libc++-dev-wasm32 libclang-rt-dev-wasm32 libclang-rt-dev-wasm64 libclang-rt-dev-win \
+	flang
 no_packages    :=
 
-EXTRA_SUPPORTED=amd64 arm64 armel armhf i386 ppc64el kfreebsd-amd64 kfreebsd-i386 s390 s390x sparc alpha hppa loong64 m68k powerpcspe ppc64 sh4 sparc64 x32
-ifneq (,$(filter $(DEB_HOST_ARCH),$(EXTRA_SUPPORTED)))
+LLVM_BUILD_DEPS = llvm-$(LV) $(REQV), llvm-$(LV)-runtime, llvm-$(LV)-dev, \
+	clang-$(LV), clang-tools-$(LV), clangd-$(LV), \
+	clang-tidy-$(LV), clang-format-$(LV), \
+        lld-$(LV) [$(LLD_ARCHS)], \
+	lldb-$(LV) [$(LLDB_ARCHS)], \
+	flang-$(LV) [$(FLANG_ARCHS)], \
+	bolt-$(LV) [$(BOLT_ARCHS)], \
+
+
+ifneq (,$(filter $(DEB_HOST_ARCH),$(LLDB_ARCHS)))
     all_packages += lldb liblldb-dev python3-lldb
 else
     no_packages += lldb liblldb-dev python3-lldb
 endif
 
-LLD_SUPPORTED=amd64 arm64 armel armhf i386 loong64 mips mipsel mips64el ppc64el kfreebsd-amd64 kfreebsd-i386 s390 s390x sparc alpha hppa m68k powerpcspe ppc64 sh4 sparc64 x32 riscv64
-ifneq (,$(filter $(DEB_HOST_ARCH),$(LLD_SUPPORTED)))
+ifneq (,$(filter $(DEB_HOST_ARCH),$(LLD_ARCHS)))
     all_packages += lld liblld-dev
 else
     no_packages += lld liblld-dev
 endif
 
-FLANG_SUPPORTED=amd64 arm64 mips64el ppc64el kfreebsd-amd64 ppc64 sparc64 riscv64
-ifneq (,$(filter $(DEB_HOST_ARCH),$(FLANG_SUPPORTED)))
+ifneq (,$(filter $(DEB_HOST_ARCH),$(FLANG_ARCHS)))
     all_packages += flang libflang-dev
 else
     no_packages += flang libflang-dev
 endif
 
-BOLT_SUPPORTED=amd64
-ifneq (,$(filter $(DEB_HOST_ARCH),$(BOLT_SUPPORTED)))
+ifneq (,$(filter $(DEB_HOST_ARCH),$(BOLT_ARCHS)))
     all_packages += llvm-bolt libbolt-dev
 else
     no_packages += llvm-bolt libbolt-dev
+endif
+
+ifneq (,$(filter $(DEB_HOST_ARCH),$(POLLY_ARCHS)))
+    all_packages += libpolly-dev
+else
+    no_packages += libpolly-dev
+endif
+
+# 64bit and i386
+ifneq (,$(filter $(DEB_HOST_ARCH),$(CLANG_RT_ARCHS)))
+    #all_packages += libclang-rt-dev
+else
+    no_packages += libclang-rt-dev
 endif
 
 
@@ -178,7 +219,7 @@ substvars:
 build: build-arch build-indep
 build-arch: build-stamp
 build-indep: build-stamp
-build-stamp:
+build-stamp: control-stamp
 	dh_testdir
 	touch build-stamp
 
@@ -187,6 +228,20 @@ clean:
 	rm -f *-stamp
 	rm -f debian/substvars.local
 	dh_clean
+
+# link_bin_and_man(<unversioned pkg>, <versioned pkg>)
+define link_bin_and_man
+	@echo 'link_bin_and_man $(1) -> $(2)'
+	dpkg -l $(2) 2>/dev/null | grep '^ii'
+	for f in $$(dpkg -L $(2)); do \
+	  case $$f in /usr/bin/*-$(LV)|/usr/share/man/man1/*-$(LV).1.gz) \
+	    lnk=$$(echo $$f | sed -e 's/-$(LV)//'); \
+	    mkdir -p debian/$(strip $(1))/$$(dirname $$lnk); \
+	    echo ln -s $$(basename $$f) debian/$(strip $(1))$$lnk; \
+	    ln -s $$(basename $$f) debian/$(strip $(1))$$lnk;; \
+	  esac; \
+	done
+endef
 
 install: build README substvars
 	dh_testdir
@@ -197,103 +252,32 @@ install: build README substvars
 	done
 
 	: # llvm
-	dh_installdirs -pllvm \
-		usr/bin usr/share/man/man1
-	for bin in \
-		bugpoint llc llvm-ar llvm-as llvm-bcanalyzer llvm-config \
-		llvm-cov llvm-diff llvm-dis llvm-dwarfdump llvm-extract \
-		llvm-link llvm-mc llvm-nm llvm-objdump \
-		llvm-ranlib llvm-rtdyld llvm-size llvm-tblgen llvm-profdata \
-		llvm-symbolizer dsymutil llvm-PerfectShuffle llvm-c-test llvm-cat \
-		llvm-cfi-verify llvm-cvtres llvm-cxxdump llvm-cxxfilt llvm-dlltool \
-		llvm-dwp llvm-exegesis llvm-lib llvm-lto llvm-lto2 llvm-mca llvm-modextract \
-		llvm-mt llvm-objcopy llvm-opt-report llvm-pdbutil llvm-rc llvm-readelf \
-		llvm-readobj llvm-split llvm-stress llvm-strings llvm-strip llvm-undname \
-		llvm-xray sanstats opt llvm-addr2line llvm-reduce \
-		; do \
-		dh_link -pllvm \
-			/usr/lib/llvm-$(PV_LLVM)/bin/$$bin \
-			/usr/bin/$$bin ; \
-	done
-	for bin in \
-		yaml2obj obj2yaml verify-uselistorder \
-		; do \
-		dh_link -pllvm \
-			/usr/lib/llvm-$(PV_LLVM)/bin/$$bin \
-			/usr/bin/$$bin ; \
-	done
-# To know if there is a manpage or not
-# L="LIST ABOVE"
-# for f in $L; do if test -f /usr/share/man/man1/$f-7.1.gz; then echo $f; fi; done|tr "\n" " "
-	for man in \
-		bugpoint llc llvm-ar llvm-as llvm-bcanalyzer llvm-config llvm-cov \
-		llvm-diff llvm-dis llvm-dwarfdump llvm-extract llvm-link llvm-mc \
-		llvm-nm llvm-objdump llvm-ranlib llvm-rtdyld llvm-size llvm-tblgen \
-		llvm-profdata llvm-symbolizer dsymutil llvm-cxxfilt llvm-exegesis \
-		llvm-lib llvm-mca llvm-objcopy llvm-pdbutil llvm-readelf llvm-readobj \
-		llvm-stress llvm-strings llvm-strip opt llvm-addr2line; do \
-		dh_link -pllvm \
-			/usr/share/man/man1/$$man-$(PV_LLVM).1.gz \
-			/usr/share/man/man1/$$man.1.gz ; \
-	done
+	dh_installdirs -pllvm
+	$(call link_bin_and_man, llvm, llvm-$(LV))
 
-	for man in \
-		clang; do \
-		dh_link -pclang \
-			/usr/share/man/man1/$$man-$(PV_LLVM).1.gz \
-			/usr/share/man/man1/$$man.1.gz ; \
-	done
+	: # clang
+	$(call link_bin_and_man, clang, clang-$(LV))
 
-	for man in \
-		clang-apply-replacements clang-check clang-query \
-		scan-build scan-view sancov; do \
-		dh_link -pclang-tools \
-			/usr/share/man/man1/$$man-$(PV_LLVM).1.gz \
-			/usr/share/man/man1/$$man.1.gz ; \
-	done
+	: # clang-tools
+	$(call link_bin_and_man, clang-tools, clang-tools-$(LV))
 
-	for man in \
-		clang-format clang-format-diff; do \
-		dh_link -pclang-format \
-			/usr/share/man/man1/$$man-$(PV_LLVM).1.gz \
-			/usr/share/man/man1/$$man.1.gz ; \
-	done
+	: # clang-format
+	$(call link_bin_and_man, clang-format, clang-format-$(LV))
+	dh_link -pclang-format \
+		/usr/share/vim/addons/syntax/clang-format-$(PV_LLVM).py \
+		/usr/share/vim/addons/syntax/clang-format.py
+	dh_link -pclang-format \
+		/usr/share/emacs/site-lisp/clang-format-$(PV_LLVM) \
+		/usr/share/emacs/site-lisp/clang-format
 
-	for man in \
-		clangd; do \
-		dh_link -pclangd \
-			/usr/share/man/man1/$$man-$(PV_LLVM).1.gz \
-			/usr/share/man/man1/$$man.1.gz ; \
-	done
+	: # clangd
+	$(call link_bin_and_man, clangd, clangd-$(LV))
 
-	for man in \
-		clang-tidy; do \
-		dh_link -pclang-tidy \
-			/usr/share/man/man1/$$man-$(PV_LLVM).1.gz \
-			/usr/share/man/man1/$$man.1.gz ; \
-	done
-
-	for man in \
-		lldb; do \
-		dh_link -plldb \
-			/usr/share/man/man1/$$man-$(PV_LLVM).1.gz \
-			/usr/share/man/man1/$$man.1.gz ; \
-	done
-
-	for man in \
-		ld.lld lld; do \
-		dh_link -plld \
-			/usr/share/man/man1/ld.lld-$(PV_LLVM).1.gz \
-			/usr/share/man/man1/$$man.1.gz ; \
-	done
+	: # clang-tidy
+	$(call link_bin_and_man, clang-tidy, clang-tidy-$(LV))
 
 	: # llvm-runtime
-	dh_installdirs -pllvm-runtime \
-		usr/bin usr/share/man/man1
-	dh_link -pllvm-runtime \
-		/usr/lib/llvm-$(PV_LLVM)/bin/lli /usr/bin/lli
-	dh_link -pllvm-runtime \
-	  /usr/share/man/man1/lli-$(PV_LLVM).1.gz /usr/share/man/man1/lli.1.gz
+	$(call link_bin_and_man, llvm-runtime, llvm-$(LV)-runtime)
 
 	: # llvm-dev
 	dh_installdirs -pllvm-dev \
@@ -313,6 +297,10 @@ install: build README substvars
 		/usr/lib/llvm-$(PV_LLVM)/lib/$$lib /usr/lib/$$lib; \
 	done
 
+ifneq (,$(filter $(DEB_HOST_ARCH),$(LLDB_ARCHS)))
+	: # lldb
+	$(call link_bin_and_man, lldb, lldb-$(LV))
+
 	: # liblldb-dev
 	dh_installdirs -pliblldb-dev \
 		/usr/include \
@@ -325,134 +313,36 @@ install: build README substvars
 		dh_link -pliblldb-dev \
 		/usr/lib/llvm-$(PV_LLVM)/lib/$$lib /usr/lib/$$lib; \
 	done
+endif
+
+ifneq (,$(filter $(DEB_HOST_ARCH),$(LLD_ARCHS)))
+	: # lld
+	$(call link_bin_and_man, lld, lld-$(LV))
 
 	: # liblld-dev
 	dh_installdirs -pliblld-dev \
 		/usr/include
 	dh_link -pliblld-dev \
-		/usr/lib/llvm-$(PV_LLVM)/include/lld /usr/include/lld \
+		/usr/lib/llvm-$(PV_LLVM)/include/lld /usr/include/lld
+endif
 
+ifneq (,$(filter $(DEB_HOST_ARCH),$(OCAML_ARCHS)))
 	: # libllvm-ocaml-dev
 	dh_installdirs -plibllvm-ocaml-dev \
 		/usr/lib/ocaml/METAS
 	dh_link -plibllvm-ocaml-dev \
 		/usr/lib/ocaml/META.llvm /usr/lib/ocaml/METAS/META.llvm
+endif
 
-	: #  clang
+ifneq (,$(filter $(DEB_HOST_ARCH),$(FLANG_ARCHS)))
+	: # flang
+	$(call link_bin_and_man, flang, flang-$(LV))
+endif
 
-	dh_installdirs -pclang \
-		usr/bin usr/share/man/man1
-	for bin in \
-		clang clang++ \
-		; do \
-		dh_link -pclang \
-			/usr/lib/llvm-$(PV_LLVM)/bin/$$bin \
-			/usr/bin/$$bin ; \
-	done
-
-# clang-tools
-	dh_installdirs -pclang-tools \
-		usr/bin usr/share/man/man1
-	for bin in \
-		clang-check c-index-test \
-		clang-apply-replacements clang-query sancov; do \
-		dh_link -pclang-tools \
-			/usr/lib/llvm-$(PV_LLVM)/bin/$$bin \
-			/usr/bin/$$bin ; \
-	done
-
-# clang-tidy
-	for bin in \
-		clang-tidy \
-		; do \
-		dh_link -pclang-tidy \
-			/usr/lib/llvm-$(PV_LLVM)/bin/$$bin \
-			/usr/bin/$$bin ; \
-	done
-	dh_link -pclang-tidy \
-		/usr/bin/run-clang-tidy-$(PV_LLVM).py  \
-		/usr/bin/run-clang-tidy
-	dh_link -pclang-tidy \
-		/usr/bin/clang-tidy-diff-$(PV_LLVM).py  \
-		/usr/bin/clang-tidy-diff
-
-#  clang-format
-	dh_link -pclang-format \
-		/usr/bin/clang-format-$(PV_LLVM) \
-		/usr/bin/clang-format
-	dh_link -pclang-format \
-		/usr/bin/clang-format-diff-$(PV_LLVM) \
-		/usr/bin/clang-format-diff
-	dh_link -pclang-format \
-		/usr/bin/git-clang-format-$(PV_LLVM) \
-		/usr/bin/git-clang-format
-	dh_link -pclang-format \
-		/usr/share/vim/addons/syntax/clang-format-$(PV_LLVM).py \
-		/usr/share/vim/addons/syntax/clang-format.py
-	dh_link -pclang-format \
-		/usr/share/emacs/site-lisp/clang-format-$(PV_LLVM) \
-		/usr/share/emacs/site-lisp/clang-format
-
-#  clangd
-	dh_link -pclangd \
-			/usr/bin/clangd-$(PV_LLVM) \
-			/usr/bin/clangd
-
-#  clang-tools
-	dh_link -pclang-tools \
-			/usr/bin/scan-build-$(PV_LLVM) \
-			/usr/bin/scan-build
-	dh_link -pclang-tools \
-			/usr/bin/scan-view-$(PV_LLVM) \
-			/usr/bin/scan-view
-
-#  clang
-	dh_link -pclang \
-			/usr/bin/asan_symbolize-$(PV_LLVM) \
-			/usr/bin/asan_symbolize
-
-#  lldb
-	dh_link -plldb \
-			/usr/bin/lldb-$(PV_LLVM) \
-			/usr/bin/lldb
-	dh_link -plldb \
-			/usr/bin/lldb-argdumper-$(PV_LLVM) \
-			/usr/bin/lldb-argdumper
-	dh_link -plldb \
-			/usr/bin/lldb-server-$(PV_LLVM) \
-			/usr/bin/lldb-server
-
-#  lld
-	dh_link -plld \
-			/usr/bin/lld-$(PV_LLVM) \
-			/usr/bin/lld
-	dh_link -plld \
-			/usr/bin/ld.lld-$(PV_LLVM) \
-			/usr/bin/ld.lld
-	dh_link -plld \
-			/usr/bin/lld-link-$(PV_LLVM) \
-			/usr/bin/lld-link
-	dh_link -plld \
-			/usr/bin/wasm-ld-$(PV_LLVM) \
-			/usr/bin/wasm-ld
-
-# flang
-	for bin in \
-	bbc f18-parse-demo fir-opt flang-new flang-to-external-fc tco \
-	; do \
-	dh_link -pflang \
-		/usr/bin/$$bin-$(PV_LLVM) \
-		/usr/bin/$$bin ; \
-	done
-
-# bolt
-	for bin in \
-	llvm-bolt llvm-bolt-heatmap llvm-boltdiff merge-fdata perf2bolt \
-	; do \
-	dh_link -pllvm-bolt \
-		/usr/bin/$$bin-$(PV_LLVM) \
-		/usr/bin/$$bin ; \
-	done
+ifneq (,$(filter $(DEB_HOST_ARCH),$(BOLT_ARCHS)))
+	: # bolt
+	$(call link_bin_and_man, llvm-bolt, bolt-$(LV))
+endif
 
 
 nopkgs := $(foreach p, $(no_packages),-N$(p))
@@ -477,6 +367,31 @@ binary-arch: build install
 
 	dh_md5sums -a $(nopkgs)
 	dh_builddeb -a $(nopkgs)
+
+control-stamp: debian/control
+debian/control: debian/rules debian/control.in
+	sed \
+	    -e "s|@ANY_ARCHS@|$(sort $(ANY_ARCHS))|g" \
+	    -e "s|@BOLT_ARCHS@|$(sort $(BOLT_ARCHS))|g" \
+	    -e "s|@CLANG_GRPC_ARCHS@|$(CLANG_GRPC_ARCHS)|g" \
+	    -e "s|@CLANG_RT_ARCHS@|$(CLANG_RT_ARCHS)|g" \
+	    -e "s|@FLANG_ARCHS@|$(FLANG_ARCHS)|g" \
+	    -e "s|@HWASAN_ARCHS@|$(HWASAN_ARCHS)|g" \
+	    -e "s|@LIBFUZZER_ARCHS@|$(sort $(LIBFUZZER_ARCHS))|g" \
+	    -e "s|@LIBUNWIND_ARCHS@|$(sort $(LIBUNWIND_ARCHS))|g" \
+	    -e "s|@LLD_ARCHS@|$(sort $(LLD_ARCHS))|g" \
+	    -e "s|@LLDB_ARCHS@|$(LLDB_ARCHS)|g" \
+	    -e "s|@LLVM_LIBC_ARCHS@|$(LLVM_LIBC_ARCHS)|g" \
+	    -e "s|@LLVM_SPIRV_ARCHS@|$(LLVM_SPIRV_ARCHS)|g" \
+	    -e "s|@MULTILIB_ARCHS@|$(MULTILIB_ARCHS)|g" \
+	    -e "s|@OCAML_ARCHS@|$(OCAML_ARCHS)|g" \
+	    -e "s|@OFFLOAD_ARCHS@|$(OFFLOAD_ARCHS)|g" \
+	    -e "s|@OMP_ARCHS@|$(OMP_ARCHS)|g" \
+	    -e "s|@OMPD_ARCHS@|$(OMPD_ARCHS)|g" \
+	    -e "s|@POLLY_ARCHS@|$(sort $(POLLY_ARCHS))|g" \
+	    -e "s|@LLVM_BUILD_DEPS@|$(strip $(LLVM_BUILD_DEPS))|g" \
+		debian/control.in > debian/control
+
 
 binary: binary-indep binary-arch
 .PHONY: build clean binary-indep binary-arch binary install
