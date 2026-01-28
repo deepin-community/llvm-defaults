@@ -1,0 +1,435 @@
+Source: llvm-defaults
+Section: devel
+Priority: optional
+Maintainer: LLVM Packaging Team <pkg-llvm-team@lists.alioth.debian.org>
+Uploaders: Matthias Klose <doko@debian.org>, Sylvestre Ledru <sylvestre@debian.org>,
+ Gianfranco Costamagna <locutusofborg@debian.org>
+Standards-Version: 4.7.2
+Rules-Requires-Root: no
+Build-Depends: debhelper-compat (= 13), dpkg-dev (>= 1.13.9), lsb-release,
+ m4, @LLVM_BUILD_DEPS@
+Vcs-Git: https://salsa.debian.org/pkg-llvm-team/llvm-defaults.git -b snapshot
+Vcs-Browser: https://salsa.debian.org/pkg-llvm-team/llvm-defaults/
+
+Package: llvm
+Architecture: @ANY_ARCHS@
+Depends: llvm-runtime (= ${binary:Version}), llvm-${pv:llvm} ${reqv:llvm}, ${misc:Depends}
+Description: Modular compiler and toolchain technologies
+ LLVM is a collection of libraries and tools that make it easy to build
+ compilers, optimizers, just-in-time code generators, and many other
+ compiler-related programs.
+ .
+ This is a dependency package providing the default llvm package.
+
+Package: llvm-runtime
+Architecture: @ANY_ARCHS@
+Depends: llvm-${pv:llvm}-runtime ${reqv:llvm}, ${misc:Depends}
+Multi-Arch: same
+Description: Modular compiler and toolchain technologies, bytecode interpreter
+ LLVM is a collection of libraries and tools that make it easy to build
+ compilers, optimizers, just-in-time code generators, and many other
+ compiler-related programs.
+ .
+ This is a dependency package providing the default bytecode interpreter.
+
+Package: llvm-dev
+Architecture: @ANY_ARCHS@
+Depends: llvm-runtime (= ${binary:Version}), llvm-${pv:llvm}-dev ${reqv:llvm}, ${misc:Depends}, llvm
+Description: Modular compiler and toolchain technologies, libraries and headers
+ LLVM is a collection of libraries and tools that make it easy to build
+ compilers, optimizers, just-in-time code generators, and many other
+ compiler-related programs.
+ .
+ This is a dependency package providing the default libraries and headers.
+
+Package: libllvm-ocaml-dev
+Architecture: amd64 arm64 ppc64el riscv64 s390x
+Section: ocaml
+Depends: llvm-runtime (= ${binary:Version}), libllvm-${pv:llvm}-ocaml-dev ${reqv:llvm}, ${misc:Depends}
+Description: Modular compiler and toolchain technologies, bindings for OCaml
+ LLVM is a collection of libraries and tools that make it easy to build
+ compilers, optimizers, just-in-time code generators, and many other
+ compiler-related programs.
+ .
+ This is a dependency package providing the default bindings for OCaml.
+
+Package: clang
+Architecture: @ANY_ARCHS@
+Depends: clang-${pv:llvm} ${reqv:llvm}, ${misc:Depends}
+Replaces: clang-tools (<< 1:21.1.5-1~),
+ clang (<< 3.2-1~exp2), clang-3.2, clang-3.3, clang-3.4 (<< 1:3.4.2-7~exp1),
+ clang-3.5 (<< 1:3.5~+rc1-3~exp1)
+Breaks: clang-tools (<< 1:21.1.5-1~),
+ clang-3.2, clang-3.3, clang-3.4 (<< 1:3.4.2-7~exp1), clang-3.5 (<< 1:3.5~+rc1-3~exp1)
+Description: C, C++ and Objective-C compiler (LLVM based), clang binary
+ Clang project is a C, C++, Objective C and Objective C++ front-end
+ for the LLVM compiler. Its goal is to offer a replacement to the GNU Compiler
+ Collection (GCC).
+ .
+ Clang implements all of the ISO C++ 1998, 11, 14 and 17 standards and also
+ provides most of the support of C++20.
+ .
+ This is a dependency package providing the default clang compiler.
+
+Package: clang-tools
+Architecture: @ANY_ARCHS@
+Depends: clang-tools-${pv:llvm} ${reqv:llvm}, ${misc:Depends}
+Breaks: clang (<< 1:21.1.5-1~)
+Replaces: clang (<< 1:21.1.5~)
+Multi-Arch: same
+Description: clang-based tools
+ Clang project is a C, C++, Objective C and Objective C++ front-end
+ for the LLVM compiler. Its goal is to offer a replacement to the GNU Compiler
+ Collection (GCC).
+ .
+ Clang implements all of the ISO C++ 1998, 11, 14 and 17 standards and also
+ provides most of the support of C++20.
+ .
+ This is a dependency package providing the clang tools package.
+
+Package: clang-tidy
+Architecture: @ANY_ARCHS@
+Depends: clang-tidy-${pv:llvm} ${reqv:llvm}, ${misc:Depends}
+Breaks: clang (<< 1:3.6-28)
+Replaces: clang (<< 1:3.6-28)
+Description: clang-based C++ linter tool
+ Provide an extensible framework for diagnosing and fixing typical programming
+ errors, like style violations, interface misuse, or bugs that can be deduced
+ via static analysis. clang-tidy is modular and provides a convenient interface
+ for writing new checks.
+ .
+ This is a dependency package providing the clang tidy tool.
+
+Package: clangd
+Architecture: @ANY_ARCHS@
+Depends: clangd-${pv:llvm} ${reqv:llvm}, ${misc:Depends}
+Breaks: clang-tools (<< 1:9.0-48)
+Replaces: clang-tools (<< 1:9.0-48)
+Multi-Arch: same
+Description: Language server that provides IDE-like features to editors
+ clangd understands your C++ code and adds smart features to your editor:
+  - code completion
+  - compile errors
+  - go-to-definition
+  - and more.
+ .
+ clangd is a language server that implements the Language Server Protocol;
+ it can work with many editors through a plugin.
+ .
+ This is a dependency package providing clangd.
+
+Package: clang-format
+Architecture: @ANY_ARCHS@
+Depends: clang-format-${pv:llvm} ${reqv:llvm}, ${misc:Depends}
+Breaks: clang (<< 1:3.6-28)
+Replaces: clang (<< 1:3.6-28)
+Multi-Arch: same
+Description: Tool to format C/C++/Obj-C code
+ Clang-format is both a library and a stand-alone tool with the goal of
+ automatically reformatting C++ sources files according to configurable
+ style guides. To do so, clang-format uses Clang's Lexer to transform an
+ input file into a token stream and then changes all the whitespace around
+ those tokens. The goal is for clang-format to both serve both as a user
+ tool (ideally with powerful IDE integrations) and part of other
+ refactoring tools, e.g. to do a reformatting of all the lines changed
+ during a renaming.
+ .
+ This is a dependency package providing the clang format tool.
+
+Package: libclang-cpp-dev
+Architecture: @ANY_ARCHS@
+Section: libdevel
+Depends: ${shlibs:Depends}, ${misc:Depends},
+ libclang-cpp${pv:llvm}-dev ${reqv:llvm}
+Description: C++ interface to the clang library
+ Clang project is a C, C++, Objective C and Objective C++ front-end
+ for the LLVM compiler. Its goal is to offer a replacement to the GNU Compiler
+ Collection (GCC).
+ .
+ Clang implements all of the ISO C++ 1998, 11, 14 and 17 standards and also
+ provides most of the support of C++20.
+ .
+ This is a dependency package providing the default Clang C++ library.
+
+Package: libclang-dev
+Architecture: @ANY_ARCHS@
+Section: libdevel
+Depends: ${shlibs:Depends}, ${misc:Depends},
+ libclang-${pv:llvm}-dev ${reqv:llvm}
+Description: clang library - Development package
+ Clang project is a C, C++, Objective C and Objective C++ front-end
+ for the LLVM compiler. Its goal is to offer a replacement to the GNU Compiler
+ Collection (GCC).
+ .
+ Clang implements all of the ISO C++ 1998, 11, 14 and 17 standards and also
+ provides most of the support of C++20.
+ .
+ This is a dependency package providing the default libclang libraries and
+ headers.
+
+Package: libclang-rt-dev
+Architecture: @ANY_ARCHS@
+Section: libdevel
+Depends: ${shlibs:Depends}, ${misc:Depends},
+ libclang-rt-${pv:llvm}-dev ${reqv:llvm}
+Description: Compiler-rt - Development package
+ This package provides various libraries:
+ .
+   * builtins - Simple libraries that provide implementation of the
+     low-level target-specific hooks required by code generation
+     and other runtime components.
+   * sanitizer runtimes - AddressSanitizer, ThreadSanitizer,
+     UndefinedBehaviorSanitizer, MemorySanitizer, LeakSanitizer
+     DataFlowSanitizer, etc
+   * profile - Library which is used to collect coverage information.
+ .
+ This is a dependency package providing the default compiler-rt libraries and
+ headers.
+
+Package: libclang-rt-dev-wasm32
+Architecture: @ANY_ARCHS@
+Section: libdevel
+Depends: ${shlibs:Depends}, ${misc:Depends},
+ libclang-rt-${pv:llvm}-dev-wasm32 ${reqv:llvm}
+Description: Compiler-rt - wasm32 builtins
+ Provides the compiler-rt builtins for WebAssembly 32 bits
+ .
+ This is a dependency package providing the default libclang wasm32 library.
+
+Package: libclang-rt-dev-wasm64
+Architecture: @ANY_ARCHS@
+Section: libdevel
+Depends: ${shlibs:Depends}, ${misc:Depends},
+ libclang-rt-${pv:llvm}-dev-wasm64 ${reqv:llvm}
+Description: Compiler-rt - wasm64 builtins
+ Provides the compiler-rt builtins for WebAssembly 64 bits
+ .
+ This is a dependency package providing the default libclang wasm64 library.
+
+Package: libc++-dev-wasm32
+Architecture: @ANY_ARCHS@
+Section: libdevel
+Depends: ${shlibs:Depends}, ${misc:Depends},
+ libc++-${pv:llvm}-dev-wasm32
+Description: LLVM C++ Standard library (WASI)
+ libc++ is another implementation of the C++ standard library
+ .
+ Features and Goals
+ .
+   * Correctness as defined by the C++ standards.
+   * Fast execution.
+   * Minimal memory use.
+   * Fast compile times.
+   * ABI compatibility with gcc's libstdc++ for some low-level features such
+     as exception objects, rtti and memory allocation.
+   * Extensive unit tests.
+ .
+ This is a dependency package providing the default 32-bit WebAssembly
+ System Interface.
+
+Package: libclang-rt-dev-win
+Architecture: @ANY_ARCHS@
+Section: libdevel
+Depends: ${shlibs:Depends}, ${misc:Depends},
+ libclang-rt-${pv:llvm}-dev-win ${reqv:llvm}
+Description: Compiler-rt - MingW 64 builtins
+ Provides the compiler-rt builtins for MingW 64
+ .
+ This is a dependency package providing the default libclang MingW 64 library.
+
+Package: liblldb-dev
+Architecture: @LLDB_ARCHS@
+Section: libdevel
+Depends: ${shlibs:Depends}, ${misc:Depends},
+ liblldb-${pv:llvm}-dev ${reqv:llvm}
+Breaks: lldb-11, python3-lldb-11
+Multi-Arch: same
+Description: Next generation, high-performance debugger, header files
+ LLDB is a next generation, high-performance debugger. It is built as a set of
+ reusable components which highly leverage existing libraries in the larger LLVM
+ Project, such as the Clang expression parser and LLVM disassembler.
+ .
+ This package provides the header files to build extension over lldb.
+
+Package: lldb
+Architecture: @LLDB_ARCHS@
+Depends: lldb-${pv:llvm} ${reqv:llvm}, ${misc:Depends}
+Pre-Depends: ${misc:Pre-Depends}
+Breaks: lldb-11, python3-lldb-11
+Multi-Arch: same
+Description: Next generation, high-performance debugger
+ LLDB is a next generation, high-performance debugger. It is built as a set of
+ reusable components which highly leverage existing libraries in the larger LLVM
+ Project, such as the Clang expression parser and LLVM disassembler.
+ .
+ This is a dependency package providing the default version of lldb.
+
+Package: lld
+Architecture: @LLD_ARCHS@
+Depends: lld-${pv:llvm} ${reqv:llvm}, ${misc:Depends}
+Pre-Depends: ${misc:Pre-Depends}
+Multi-Arch: same
+Description: LLVM-based linker
+ LLD is a new, high-performance linker. It is built as a set of reusable
+ components which highly leverage existing libraries in the larger LLVM
+ Project.
+ .
+ This is a dependency package providing the lld linker.
+
+Package: llvm-bolt
+Architecture: @BOLT_ARCHS@
+Depends: bolt-${pv:llvm} ${reqv:llvm}, ${misc:Depends}
+Pre-Depends: ${misc:Pre-Depends}
+Multi-Arch: same
+Description: Post-link optimizer
+ It achieves the improvements by optimizing application's code layout based on
+ execution profile gathered by sampling profiler.
+ .
+ This is a dependency package providing bolt.
+ .
+ This package is not called bolt because it is already used.
+
+Package: python3-clang
+Section: python
+Architecture: @ANY_ARCHS@
+Depends: python3-clang-${pv:llvm} ${reqv:llvm}, ${misc:Depends}
+Replaces: python-clang (<< 0.49~exp2)
+Breaks: python-clang (<< 0.49~exp2)
+Multi-Arch: same
+Description: Clang Python Bindings
+ Clang project is a C, C++, Objective C and Objective C++ front-end
+ based on the LLVM compiler. Its goal is to offer a replacement to the
+ GNU Compiler Collection (GCC).
+ .
+ Clang implements all of the ISO C++ 1998, 11, 14 and 17 standards and also
+ provides most of the support of C++20.
+ .
+ This is a dependency package providing the Python binding to Clang.
+
+Package: python3-lldb
+Section: python
+Architecture: @LLDB_ARCHS@
+Depends: python3-lldb-${pv:llvm} ${reqv:llvm}, ${misc:Depends}
+Replaces: python-lldb (<< 0.49~exp2)
+Breaks: python-lldb (<< 0.49~exp2), python3-lldb-11
+Description: Next generation, high-performance debugger, python lib
+ LLDB is a next generation, high-performance debugger. It is built as a set of
+ reusable components which highly leverage existing libraries in the larger LLVM
+ Project, such as the Clang expression parser and LLVM disassembler.
+ .
+ This is a dependency package providing the Python binding to lldb.
+
+Package: libomp-dev
+Section: libdevel
+Architecture: @OMP_ARCHS@
+Depends: ${shlibs:Depends}, ${misc:Depends},
+ libomp-${pv:llvm}-dev ${reqv:llvm}
+Multi-Arch: same
+Description: LLVM OpenMP runtime - dev package
+ The runtime is the part of the OpenMP implementation that your code is
+ linked against, and that manages the multiple threads in an OpenMP program
+ while it is executing.
+ .
+ This is a dependency package providing the default LLVM OpenMP dev
+ package.
+
+Package: libc++-dev
+Section: libdevel
+Architecture: @ANY_ARCHS@
+Multi-Arch: same
+Depends: libc++-${pv:llvm}-dev ${reqv:llvm}, ${misc:Depends}
+Breaks: libc++1-11, libc++abi1-11
+Description: LLVM C++ Standard library (development files)
+ libc++ is another implementation of the C++ standard library
+ .
+ Features and Goals
+ .
+   * Correctness as defined by the C++ standards.
+   * Fast execution.
+   * Minimal memory use.
+   * Fast compile times.
+   * ABI compatibility with gcc's libstdc++ for some low-level features such
+     as exception objects, rtti and memory allocation.
+   * Extensive unit tests.
+ .
+ This is a dependency package providing the default LLVM C++ Standard library
+ development files.
+
+Package: libc++abi-dev
+Section: libdevel
+Architecture: @ANY_ARCHS@
+Multi-Arch: same
+Depends: libc++abi-${pv:llvm}-dev ${reqv:llvm}, ${misc:Depends}
+Breaks: libc++abi1-11
+Description: LLVM low level support for a standard C++ library (development files)
+ libc++abi is another implementation of low level support for a standard C++
+ library.
+ .
+ Features and Goals
+ .
+   * Correctness as defined by the C++ standards.
+   * Provide a portable sublayer to ease the porting of libc++
+ .
+ This is a dependency package providing low level support to
+ dev LLVM C++ Standard library.
+
+Package: liblld-dev
+Architecture: @ANY_ARCHS@
+Section: libdevel
+Depends: ${shlibs:Depends}, ${misc:Depends},
+ liblld-${pv:llvm}-dev ${reqv:llvm}
+Multi-Arch: same
+Description: LLVM-based linker, library
+ LLD is a new, high-performance linker. It is built as a set of reusable
+ components which highly leverage existing libraries in the larger LLVM
+ Project.
+ .
+ This is a dependency package providing the default liblld-dev package.
+
+Package: flang
+Architecture: @FLANG_ARCHS@
+Depends: flang-${pv:llvm} ${reqv:llvm}, ${misc:Depends}
+Description: Fortran compiler
+ Ground-up implementation of a Fortran front end written in
+ modern C++.
+ .
+ While it is capable of generating executables for a number
+ of examples, some functionalities are still missing.
+
+Package: libflang-dev
+Architecture: @FLANG_ARCHS@
+Depends: libflang-${pv:llvm}-dev ${reqv:llvm}, ${misc:Depends}
+Description: Flang library - Development package
+ Ground-up implementation of a Fortran front end written in
+ modern C++.
+ .
+ While it is capable of generating executables for a number
+ of examples, some functionalities are still missing.
+ .
+ This package contains the flang libraries and headers.
+ .
+ This is a dependency package providing the default libflang-dev package.
+
+Package: libbolt-dev
+Architecture: @BOLT_ARCHS@
+Section: libdevel
+Depends: ${shlibs:Depends}, ${misc:Depends},
+ libbolt-${pv:llvm}-dev ${reqv:llvm}
+Multi-Arch: same
+Description: Post-link optimizer - Development package
+ It achieves the improvements by optimizing application's code layout based on
+ execution profile gathered by sampling profiler.
+ .
+ This is a dependency package providing the default libbolt-dev package.
+
+Package: libpolly-dev
+Architecture: @POLLY_ARCHS@
+Section: libdevel
+Depends: ${shlibs:Depends}, ${misc:Depends},
+ libpolly-${pv:llvm}-dev ${reqv:llvm}
+Multi-Arch: same
+Description: High-level loop and data-locality optimizer
+ Uses an abstract mathematical representation based on integer polyhedra
+ to analyze and optimize the memory access pattern of a program
+ .
+ This is a dependency package providing the default libbolt-dev package.

@@ -4,89 +4,91 @@ Priority: optional
 Maintainer: LLVM Packaging Team <pkg-llvm-team@lists.alioth.debian.org>
 Uploaders: Matthias Klose <doko@debian.org>, Sylvestre Ledru <sylvestre@debian.org>,
  Gianfranco Costamagna <locutusofborg@debian.org>
-Standards-Version: 4.6.2
+Standards-Version: 4.7.2
 Rules-Requires-Root: no
 Build-Depends: debhelper-compat (= 13), dpkg-dev (>= 1.13.9), lsb-release,
- m4
-Vcs-Git: https://salsa.debian.org/pkg-llvm-team/llvm-defaults.git -b snapshot
+ m4, llvm-21 (>= 1:21.1.6-1), llvm-21-runtime, llvm-21-dev, clang-21, clang-tools-21, clangd-21, clang-tidy-21, clang-format-21, lld-21 [amd64 arm64 armel armhf i386 mipsel mips64el ppc64el s390x sparc m68k ppc64 sparc64 x32 riscv64 loong64], lldb-21 [amd64 arm64 armel armhf i386 loong64 m68k ppc64el riscv64 s390x x32], flang-21 [amd64 arm64 ppc64el ppc64 sparc64 riscv64 loong64], bolt-21 [amd64 arm64],
+Vcs-Git: https://salsa.debian.org/pkg-llvm-team/llvm-defaults.git
 Vcs-Browser: https://salsa.debian.org/pkg-llvm-team/llvm-defaults/
 
 Package: llvm
-Architecture: any
+Architecture: amd64 arm64 armel armhf hurd-amd64 hurd-i386 i386 loong64 m68k mips64el mipsel powerpc ppc64 ppc64el riscv64 s390x sparc sparc64 x32
 Depends: llvm-runtime (= ${binary:Version}), llvm-${pv:llvm} ${reqv:llvm}, ${misc:Depends}
-Description: Low-Level Virtual Machine (LLVM)
- The Low-Level Virtual Machine (LLVM) is a collection of libraries and
- tools that make it easy to build compilers, optimizers, Just-In-Time
- code generators, and many other compiler-related programs.
+Description: Modular compiler and toolchain technologies
+ LLVM is a collection of libraries and tools that make it easy to build
+ compilers, optimizers, just-in-time code generators, and many other
+ compiler-related programs.
  .
  This is a dependency package providing the default llvm package.
 
 Package: llvm-runtime
-Architecture: any
+Architecture: amd64 arm64 armel armhf hurd-amd64 hurd-i386 i386 loong64 m68k mips64el mipsel powerpc ppc64 ppc64el riscv64 s390x sparc sparc64 x32
 Depends: llvm-${pv:llvm}-runtime ${reqv:llvm}, ${misc:Depends}
 Multi-Arch: same
-Description: Low-Level Virtual Machine (LLVM), bytecode interpreter
- The Low-Level Virtual Machine (LLVM) is a collection of libraries and
- tools that make it easy to build compilers, optimizers, Just-In-Time
- code generators, and many other compiler-related programs.
+Description: Modular compiler and toolchain technologies, bytecode interpreter
+ LLVM is a collection of libraries and tools that make it easy to build
+ compilers, optimizers, just-in-time code generators, and many other
+ compiler-related programs.
  .
  This is a dependency package providing the default bytecode interpreter.
 
 Package: llvm-dev
-Architecture: any
+Architecture: amd64 arm64 armel armhf hurd-amd64 hurd-i386 i386 loong64 m68k mips64el mipsel powerpc ppc64 ppc64el riscv64 s390x sparc sparc64 x32
 Depends: llvm-runtime (= ${binary:Version}), llvm-${pv:llvm}-dev ${reqv:llvm}, ${misc:Depends}, llvm
-Description: Low-Level Virtual Machine (LLVM), libraries and headers
- The Low-Level Virtual Machine (LLVM) is a collection of libraries and
- tools that make it easy to build compilers, optimizers, Just-In-Time
- code generators, and many other compiler-related programs.
+Description: Modular compiler and toolchain technologies, libraries and headers
+ LLVM is a collection of libraries and tools that make it easy to build
+ compilers, optimizers, just-in-time code generators, and many other
+ compiler-related programs.
  .
  This is a dependency package providing the default libraries and headers.
 
 Package: libllvm-ocaml-dev
-Architecture: amd64 arm64 armhf riscv64
+Architecture: amd64 arm64 ppc64el riscv64 s390x
 Section: ocaml
 Depends: llvm-runtime (= ${binary:Version}), libllvm-${pv:llvm}-ocaml-dev ${reqv:llvm}, ${misc:Depends}
-Description: Low-Level Virtual Machine (LLVM), bindings for OCaml
- The Low-Level Virtual Machine (LLVM) is a collection of libraries and
- tools that make it easy to build compilers, optimizers, Just-In-Time
- code generators, and many other compiler-related programs.
+Description: Modular compiler and toolchain technologies, bindings for OCaml
+ LLVM is a collection of libraries and tools that make it easy to build
+ compilers, optimizers, just-in-time code generators, and many other
+ compiler-related programs.
  .
  This is a dependency package providing the default bindings for OCaml.
 
 Package: clang
-Architecture: any
+Architecture: amd64 arm64 armel armhf hurd-amd64 hurd-i386 i386 loong64 m68k mips64el mipsel powerpc ppc64 ppc64el riscv64 s390x sparc sparc64 x32
 Depends: clang-${pv:llvm} ${reqv:llvm}, ${misc:Depends}
-Replaces: clang (<< 3.2-1~exp2), clang-3.2, clang-3.3, clang-3.4 (<< 1:3.4.2-7~exp1),
+Replaces: clang-tools (<< 1:21.1.5-1~),
+ clang (<< 3.2-1~exp2), clang-3.2, clang-3.3, clang-3.4 (<< 1:3.4.2-7~exp1),
  clang-3.5 (<< 1:3.5~+rc1-3~exp1)
-Breaks: clang-3.2, clang-3.3, clang-3.4 (<< 1:3.4.2-7~exp1), clang-3.5 (<< 1:3.5~+rc1-3~exp1)
+Breaks: clang-tools (<< 1:21.1.5-1~),
+ clang-3.2, clang-3.3, clang-3.4 (<< 1:3.4.2-7~exp1), clang-3.5 (<< 1:3.5~+rc1-3~exp1)
 Description: C, C++ and Objective-C compiler (LLVM based), clang binary
  Clang project is a C, C++, Objective C and Objective C++ front-end
  for the LLVM compiler. Its goal is to offer a replacement to the GNU Compiler
  Collection (GCC).
  .
- Clang implements all of the ISO C++ 1998, 11 and 14 standards and also
- provides most of the support of C++17.
+ Clang implements all of the ISO C++ 1998, 11, 14 and 17 standards and also
+ provides most of the support of C++20.
  .
  This is a dependency package providing the default clang compiler.
 
 Package: clang-tools
-Architecture: any
+Architecture: amd64 arm64 armel armhf hurd-amd64 hurd-i386 i386 loong64 m68k mips64el mipsel powerpc ppc64 ppc64el riscv64 s390x sparc sparc64 x32
 Depends: clang-tools-${pv:llvm} ${reqv:llvm}, ${misc:Depends}
-Breaks: clang (<< 1:4.0-42)
-Replaces: clang (<< 1:4.0-42)
+Breaks: clang (<< 1:21.1.5-1~)
+Replaces: clang (<< 1:21.1.5~)
 Multi-Arch: same
 Description: clang-based tools
  Clang project is a C, C++, Objective C and Objective C++ front-end
  for the LLVM compiler. Its goal is to offer a replacement to the GNU Compiler
  Collection (GCC).
  .
- Clang implements all of the ISO C++ 1998, 11 and 14 standards and also
- provides most of the support of C++17.
+ Clang implements all of the ISO C++ 1998, 11, 14 and 17 standards and also
+ provides most of the support of C++20.
  .
  This is a dependency package providing the clang tools package.
 
 Package: clang-tidy
-Architecture: any
+Architecture: amd64 arm64 armel armhf hurd-amd64 hurd-i386 i386 loong64 m68k mips64el mipsel powerpc ppc64 ppc64el riscv64 s390x sparc sparc64 x32
 Depends: clang-tidy-${pv:llvm} ${reqv:llvm}, ${misc:Depends}
 Breaks: clang (<< 1:3.6-28)
 Replaces: clang (<< 1:3.6-28)
@@ -96,12 +98,10 @@ Description: clang-based C++ linter tool
  via static analysis. clang-tidy is modular and provides a convenient interface
  for writing new checks.
  .
- clang-tidy replaces clang-modernize
- .
  This is a dependency package providing the clang tidy tool.
 
 Package: clangd
-Architecture: any
+Architecture: amd64 arm64 armel armhf hurd-amd64 hurd-i386 i386 loong64 m68k mips64el mipsel powerpc ppc64 ppc64el riscv64 s390x sparc sparc64 x32
 Depends: clangd-${pv:llvm} ${reqv:llvm}, ${misc:Depends}
 Breaks: clang-tools (<< 1:9.0-48)
 Replaces: clang-tools (<< 1:9.0-48)
@@ -119,7 +119,7 @@ Description: Language server that provides IDE-like features to editors
  This is a dependency package providing clangd.
 
 Package: clang-format
-Architecture: any
+Architecture: amd64 arm64 armel armhf hurd-amd64 hurd-i386 i386 loong64 m68k mips64el mipsel powerpc ppc64 ppc64el riscv64 s390x sparc sparc64 x32
 Depends: clang-format-${pv:llvm} ${reqv:llvm}, ${misc:Depends}
 Breaks: clang (<< 1:3.6-28)
 Replaces: clang (<< 1:3.6-28)
@@ -137,7 +137,7 @@ Description: Tool to format C/C++/Obj-C code
  This is a dependency package providing the clang format tool.
 
 Package: libclang-cpp-dev
-Architecture: any
+Architecture: amd64 arm64 armel armhf hurd-amd64 hurd-i386 i386 loong64 m68k mips64el mipsel powerpc ppc64 ppc64el riscv64 s390x sparc sparc64 x32
 Section: libdevel
 Depends: ${shlibs:Depends}, ${misc:Depends},
  libclang-cpp${pv:llvm}-dev ${reqv:llvm}
@@ -146,35 +146,13 @@ Description: C++ interface to the clang library
  for the LLVM compiler. Its goal is to offer a replacement to the GNU Compiler
  Collection (GCC).
  .
- Clang implements all of the ISO C++ 1998, 11 and 14 standards and also
- provides most of the support of C++17.
+ Clang implements all of the ISO C++ 1998, 11, 14 and 17 standards and also
+ provides most of the support of C++20.
  .
  This is a dependency package providing the default Clang C++ library.
 
-Package: libclang1
-Section: libs
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libclang1-${pv:llvm} ${reqv:llvm}
-Pre-Depends: ${misc:Pre-Depends}
-Multi-Arch: same
-Description: C, C++ and Objective-C compiler (LLVM based)
- Clang project is a C, C++, Objective C and Objective C++ front-end
- for the LLVM compiler. Its goal is to offer a replacement to the GNU Compiler
- Collection (GCC).
- .
- Clang implements all of the ISO C++ 1998, 11 and 14 standards and also
- provides most of the support of C++17.
- .
- This is a dependency package providing the default clang libraries.
- .
- The C Interface to Clang provides a relatively small API that exposes
- facilities for parsing source code into an abstract syntax tree (AST),
- loading already-parsed ASTs, traversing the AST, associating physical source
- locations with elements within the AST, and other facilities that support
- Clang-based development tools.
-
 Package: libclang-dev
-Architecture: any
+Architecture: amd64 arm64 armel armhf hurd-amd64 hurd-i386 i386 loong64 m68k mips64el mipsel powerpc ppc64 ppc64el riscv64 s390x sparc sparc64 x32
 Section: libdevel
 Depends: ${shlibs:Depends}, ${misc:Depends},
  libclang-${pv:llvm}-dev ${reqv:llvm}
@@ -183,14 +161,14 @@ Description: clang library - Development package
  for the LLVM compiler. Its goal is to offer a replacement to the GNU Compiler
  Collection (GCC).
  .
- Clang implements all of the ISO C++ 1998, 11 and 14 standards and also
- provides most of the support of C++17.
+ Clang implements all of the ISO C++ 1998, 11, 14 and 17 standards and also
+ provides most of the support of C++20.
  .
  This is a dependency package providing the default libclang libraries and
  headers.
 
 Package: libclang-rt-dev
-Architecture: any
+Architecture: amd64 arm64 armel armhf hurd-amd64 hurd-i386 i386 loong64 m68k mips64el mipsel powerpc ppc64 ppc64el riscv64 s390x sparc sparc64 x32
 Section: libdevel
 Depends: ${shlibs:Depends}, ${misc:Depends},
  libclang-rt-${pv:llvm}-dev ${reqv:llvm}
@@ -209,7 +187,7 @@ Description: Compiler-rt - Development package
  headers.
 
 Package: libclang-rt-dev-wasm32
-Architecture: any
+Architecture: amd64 arm64 armel armhf hurd-amd64 hurd-i386 i386 loong64 m68k mips64el mipsel powerpc ppc64 ppc64el riscv64 s390x sparc sparc64 x32
 Section: libdevel
 Depends: ${shlibs:Depends}, ${misc:Depends},
  libclang-rt-${pv:llvm}-dev-wasm32 ${reqv:llvm}
@@ -219,7 +197,7 @@ Description: Compiler-rt - wasm32 builtins
  This is a dependency package providing the default libclang wasm32 library.
 
 Package: libclang-rt-dev-wasm64
-Architecture: any
+Architecture: amd64 arm64 armel armhf hurd-amd64 hurd-i386 i386 loong64 m68k mips64el mipsel powerpc ppc64 ppc64el riscv64 s390x sparc sparc64 x32
 Section: libdevel
 Depends: ${shlibs:Depends}, ${misc:Depends},
  libclang-rt-${pv:llvm}-dev-wasm64 ${reqv:llvm}
@@ -229,7 +207,7 @@ Description: Compiler-rt - wasm64 builtins
  This is a dependency package providing the default libclang wasm64 library.
 
 Package: libc++-dev-wasm32
-Architecture: any
+Architecture: amd64 arm64 armel armhf hurd-amd64 hurd-i386 i386 loong64 m68k mips64el mipsel powerpc ppc64 ppc64el riscv64 s390x sparc sparc64 x32
 Section: libdevel
 Depends: ${shlibs:Depends}, ${misc:Depends},
  libc++-${pv:llvm}-dev-wasm32
@@ -249,8 +227,18 @@ Description: LLVM C++ Standard library (WASI)
  This is a dependency package providing the default 32-bit WebAssembly
  System Interface.
 
+Package: libclang-rt-dev-win
+Architecture: amd64 arm64 armel armhf hurd-amd64 hurd-i386 i386 loong64 m68k mips64el mipsel powerpc ppc64 ppc64el riscv64 s390x sparc sparc64 x32
+Section: libdevel
+Depends: ${shlibs:Depends}, ${misc:Depends},
+ libclang-rt-${pv:llvm}-dev-win ${reqv:llvm}
+Description: Compiler-rt - MingW 64 builtins
+ Provides the compiler-rt builtins for MingW 64
+ .
+ This is a dependency package providing the default libclang MingW 64 library.
+
 Package: liblldb-dev
-Architecture: any
+Architecture: amd64 arm64 armel armhf i386 loong64 m68k ppc64el riscv64 s390x x32
 Section: libdevel
 Depends: ${shlibs:Depends}, ${misc:Depends},
  liblldb-${pv:llvm}-dev ${reqv:llvm}
@@ -264,7 +252,7 @@ Description: Next generation, high-performance debugger, header files
  This package provides the header files to build extension over lldb.
 
 Package: lldb
-Architecture: any
+Architecture: amd64 arm64 armel armhf i386 loong64 m68k ppc64el riscv64 s390x x32
 Depends: lldb-${pv:llvm} ${reqv:llvm}, ${misc:Depends}
 Pre-Depends: ${misc:Pre-Depends}
 Breaks: lldb-11, python3-lldb-11
@@ -277,7 +265,7 @@ Description: Next generation, high-performance debugger
  This is a dependency package providing the default version of lldb.
 
 Package: lld
-Architecture: any
+Architecture: amd64 arm64 armel armhf i386 loong64 m68k mips64el mipsel ppc64 ppc64el riscv64 s390x sparc sparc64 x32
 Depends: lld-${pv:llvm} ${reqv:llvm}, ${misc:Depends}
 Pre-Depends: ${misc:Pre-Depends}
 Multi-Arch: same
@@ -289,7 +277,7 @@ Description: LLVM-based linker
  This is a dependency package providing the lld linker.
 
 Package: llvm-bolt
-Architecture: any
+Architecture: amd64 arm64
 Depends: bolt-${pv:llvm} ${reqv:llvm}, ${misc:Depends}
 Pre-Depends: ${misc:Pre-Depends}
 Multi-Arch: same
@@ -303,7 +291,7 @@ Description: Post-link optimizer
 
 Package: python3-clang
 Section: python
-Architecture: any
+Architecture: amd64 arm64 armel armhf hurd-amd64 hurd-i386 i386 loong64 m68k mips64el mipsel powerpc ppc64 ppc64el riscv64 s390x sparc sparc64 x32
 Depends: python3-clang-${pv:llvm} ${reqv:llvm}, ${misc:Depends}
 Replaces: python-clang (<< 0.49~exp2)
 Breaks: python-clang (<< 0.49~exp2)
@@ -313,14 +301,14 @@ Description: Clang Python Bindings
  based on the LLVM compiler. Its goal is to offer a replacement to the
  GNU Compiler Collection (GCC).
  .
- Clang implements all of the ISO C++ 1998, 11 and 14 standards and also
- provides most of the support of C++17.
+ Clang implements all of the ISO C++ 1998, 11, 14 and 17 standards and also
+ provides most of the support of C++20.
  .
  This is a dependency package providing the Python binding to Clang.
 
 Package: python3-lldb
 Section: python
-Architecture: any
+Architecture: amd64 arm64 armel armhf i386 loong64 m68k ppc64el riscv64 s390x x32
 Depends: python3-lldb-${pv:llvm} ${reqv:llvm}, ${misc:Depends}
 Replaces: python-lldb (<< 0.49~exp2)
 Breaks: python-lldb (<< 0.49~exp2), python3-lldb-11
@@ -333,7 +321,7 @@ Description: Next generation, high-performance debugger, python lib
 
 Package: libomp-dev
 Section: libdevel
-Architecture: amd64 arm64 armhf i386 mips64el ppc64el ppc64 riscv64
+Architecture: amd64 arm64 armhf i386 loong64 mips64el ppc64 ppc64el riscv64 hurd-amd64
 Depends: ${shlibs:Depends}, ${misc:Depends},
  libomp-${pv:llvm}-dev ${reqv:llvm}
 Multi-Arch: same
@@ -345,43 +333,9 @@ Description: LLVM OpenMP runtime - dev package
  This is a dependency package providing the default LLVM OpenMP dev
  package.
 
-Package: libomp5
-Multi-Arch: same
-Section: libs
-Architecture: amd64 arm64 armhf i386 mips64el ppc64el ppc64 riscv64
-Depends: libomp5-${pv:llvm} ${reqv:llvm}, ${shlibs:Depends}, ${misc:Depends}
-Description: LLVM OpenMP runtime
- The runtime is the part of the OpenMP implementation that your code is
- linked against, and that manages the multiple threads in an OpenMP program
- while it is executing.
- .
- This is a dependency package providing the default LLVM OpenMP runtime.
-
-Package: libc++1
-Section: libs
-Architecture: any
-Multi-Arch: same
-Pre-Depends: ${misc:Pre-Depends}
-Depends: libc++1-${pv:llvm} ${reqv:llvm}, ${shlibs:Depends}, ${misc:Depends}
-Breaks: libc++1-11, libc++abi1-11
-Description: LLVM C++ Standard library
- libc++ is another implementation of the C++ standard library.
- .
- Features and Goals
- .
-   * Correctness as defined by the C++ standards.
-   * Fast execution.
-   * Minimal memory use.
-   * Fast compile times.
-   * ABI compatibility with gcc's libstdc++ for some low-level features such
-     as exception objects, rtti and memory allocation.
-   * Extensive unit tests.
- .
- This is a dependency package providing the default LLVM C++ Standard library.
-
 Package: libc++-dev
 Section: libdevel
-Architecture: any
+Architecture: amd64 arm64 armel armhf hurd-amd64 hurd-i386 i386 loong64 m68k mips64el mipsel powerpc ppc64 ppc64el riscv64 s390x sparc sparc64 x32
 Multi-Arch: same
 Depends: libc++-${pv:llvm}-dev ${reqv:llvm}, ${misc:Depends}
 Breaks: libc++1-11, libc++abi1-11
@@ -401,28 +355,9 @@ Description: LLVM C++ Standard library (development files)
  This is a dependency package providing the default LLVM C++ Standard library
  development files.
 
-Package: libc++abi1
-Section: libs
-Architecture: any
-Multi-Arch: same
-Pre-Depends: ${misc:Pre-Depends}
-Depends: libc++abi1-${pv:llvm} ${reqv:llvm}, ${shlibs:Depends}, ${misc:Depends}
-Breaks: libc++abi1-11
-Description: LLVM low level support for a standard C++ library
- libc++abi is another implementation of low level support for a standard C++
- library.
- .
- Features and Goals
- .
-   * Correctness as defined by the C++ standards.
-   * Provide a portable sublayer to ease the porting of libc++
- .
- This is a dependency package providing low level support to
- LLVM C++ Standard library.
-
 Package: libc++abi-dev
 Section: libdevel
-Architecture: any
+Architecture: amd64 arm64 armel armhf hurd-amd64 hurd-i386 i386 loong64 m68k mips64el mipsel powerpc ppc64 ppc64el riscv64 s390x sparc sparc64 x32
 Multi-Arch: same
 Depends: libc++abi-${pv:llvm}-dev ${reqv:llvm}, ${misc:Depends}
 Breaks: libc++abi1-11
@@ -439,7 +374,7 @@ Description: LLVM low level support for a standard C++ library (development file
  dev LLVM C++ Standard library.
 
 Package: liblld-dev
-Architecture: any
+Architecture: amd64 arm64 armel armhf hurd-amd64 hurd-i386 i386 loong64 m68k mips64el mipsel powerpc ppc64 ppc64el riscv64 s390x sparc sparc64 x32
 Section: libdevel
 Depends: ${shlibs:Depends}, ${misc:Depends},
  liblld-${pv:llvm}-dev ${reqv:llvm}
@@ -452,7 +387,7 @@ Description: LLVM-based linker, library
  This is a dependency package providing the default liblld-dev package.
 
 Package: flang
-Architecture: any
+Architecture: amd64 arm64 ppc64el ppc64 sparc64 riscv64 loong64
 Depends: flang-${pv:llvm} ${reqv:llvm}, ${misc:Depends}
 Description: Fortran compiler
  Ground-up implementation of a Fortran front end written in
@@ -462,7 +397,7 @@ Description: Fortran compiler
  of examples, some functionalities are still missing.
 
 Package: libflang-dev
-Architecture: any
+Architecture: amd64 arm64 ppc64el ppc64 sparc64 riscv64 loong64
 Depends: libflang-${pv:llvm}-dev ${reqv:llvm}, ${misc:Depends}
 Description: Flang library - Development package
  Ground-up implementation of a Fortran front end written in
@@ -476,7 +411,7 @@ Description: Flang library - Development package
  This is a dependency package providing the default libflang-dev package.
 
 Package: libbolt-dev
-Architecture: any
+Architecture: amd64 arm64
 Section: libdevel
 Depends: ${shlibs:Depends}, ${misc:Depends},
  libbolt-${pv:llvm}-dev ${reqv:llvm}
@@ -484,5 +419,17 @@ Multi-Arch: same
 Description: Post-link optimizer - Development package
  It achieves the improvements by optimizing application's code layout based on
  execution profile gathered by sampling profiler.
+ .
+ This is a dependency package providing the default libbolt-dev package.
+
+Package: libpolly-dev
+Architecture: amd64 arm64 armel armhf hurd-amd64 hurd-i386 i386 loong64 m68k mips64el mipsel powerpc ppc64 ppc64el riscv64 s390x sparc sparc64 x32
+Section: libdevel
+Depends: ${shlibs:Depends}, ${misc:Depends},
+ libpolly-${pv:llvm}-dev ${reqv:llvm}
+Multi-Arch: same
+Description: High-level loop and data-locality optimizer
+ Uses an abstract mathematical representation based on integer polyhedra
+ to analyze and optimize the memory access pattern of a program
  .
  This is a dependency package providing the default libbolt-dev package.

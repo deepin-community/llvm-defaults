@@ -1,9 +1,162 @@
-llvm-defaults (0.58deepin1) unstable; urgency=medium
+llvm-defaults (0.70) unstable; urgency=medium
 
-  * Set unstable
-  * Add loong64 support
+  * Add lldb-dap symlimk
+    Thanks Norbert Lange for the patch
+  * Fix Vcs-Git
+  * Fix old-fsf-address-in-copyright-file
 
- -- xiangzelong <xiangzelong@deepin.org>  Thu, 28 Mar 2024 11:02:21 +0800
+  [ Kasper Kantz ]
+  * Fix the default lldb selection on riscv64
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Fri, 26 Dec 2025 00:19:36 +0100
+
+llvm-defaults (0.69) unstable; urgency=medium
+
+  * Upload to unstable.
+
+ -- Matthias Klose <doko@debian.org>  Tue, 09 Dec 2025 23:27:25 +0100
+
+llvm-defaults (0.68) experimental; urgency=medium
+
+  * Limit lld build to LLD_ARCHS.
+
+ -- Matthias Klose <doko@debian.org>  Sun, 30 Nov 2025 20:53:14 +0100
+
+llvm-defaults (0.67) experimental; urgency=medium
+
+  * Limit lld build to LLD_ARCHS.
+
+ -- Matthias Klose <doko@debian.org>  Sun, 30 Nov 2025 08:23:24 +0100
+
+llvm-defaults (0.66) experimental; urgency=medium
+
+  * d/rules: Guard lldb actions with LLDB_ARCHS conditional.
+
+ -- Matthias Klose <doko@debian.org>  Sun, 23 Nov 2025 07:18:41 +0100
+
+llvm-defaults (0.65) experimental; urgency=medium
+
+  * Don't track the binaries and man pages of packages manually, but
+    build-depend on all binary packages having versioned binaries
+    and man pages and create the symlinks based on the contents of
+    the binary packages. Closes: #1110754.
+  * Bump standards version.
+  * Don't hard-code the ARCHS macros, but take them from the llvm-X.Y-dev
+    package (/usr/lib/llvm-X.Y/share/debian_config.mk).
+  * Require a llvm-21 1:21.1.6-1 build.
+  * clang-tools: Add breaks/replaces for clang (asan_symbolizer move).
+  * Adjust breaks/replaces for clang-scan-deps move. Addresses: #1121175.
+
+ -- Matthias Klose <doko@debian.org>  Sun, 23 Nov 2025 06:03:17 +0100
+
+llvm-defaults (0.64) experimental; urgency=medium
+
+  * Default to 21. Closes: #1110843.
+  * Add the epoch for the dependencies. Closes: #803174, #1041246.
+  * Don't build omp packages on riscv64 anymore.
+  * Stop building libc++1, libc++abi1 and libomp5. These are now normal
+    M-A: same library packages.
+  * Stop building libclang1, not needed.
+  * Build a libclang-rt-dev-win package.
+  * Generate the control file the same way as done in the llvm-X.Y packages.
+    Use the same *_ARCHS macros as defined in these packages.
+    Builds again libclang-rt-dev on s390x. Closes: #1108683.
+  * Build a libpolly-dev package. Closes: #1041321.
+  * Move asan_symbolize symlink from clang to clang-tools.
+  * clang-tools: Add hwasan_symbolize symlink.
+  * clang: Add symlinks for clang-cl, clang-cpp and clang-scan-deps.
+    Closes: #1100754, #1072379.
+  * Still TODO: update for new/removed binaries and man pages.
+
+ -- Matthias Klose <doko@debian.org>  Sat, 01 Nov 2025 11:55:26 +0100
+
+llvm-defaults (0.63) unstable; urgency=medium
+
+  * Provide libomp5 and libomp-dev on riscv64 (and mips64el and loong64)
+    Thanks to Aurélien Jarno for the patch
+    (Closes: #1087281)
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Mon, 11 Nov 2024 12:42:42 +0100
+
+llvm-defaults (0.62) unstable; urgency=medium
+
+  * flang isn't a thing on mips64el (Closes: #1085422)
+    Use a defined list of archs instead of "any"
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Tue, 22 Oct 2024 08:44:12 +0200
+
+llvm-defaults (0.61) unstable; urgency=medium
+
+  * Please provide scan-build-py symlink
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Fri, 18 Oct 2024 00:18:28 +0200
+
+llvm-defaults (0.60) unstable; urgency=medium
+
+  * Upload to 19
+    See https://release.debian.org/transitions/html/llvm-defaults-19.html
+    for the transition
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Sat, 05 Oct 2024 07:57:05 +0200
+
+llvm-defaults (0.60~exp1) experimental; urgency=medium
+
+  [ Matthias Klose ]
+  * Default to 19.
+  * Update architectures for libllvm-ocaml-dev, libomp-dev and libomp5.
+  * Don't build libclang-rt-dev on 32bit archs, except for i386.
+
+  [ Gianfranco Costamagna ]
+  * Help apt breaking libc++1-14 libc++abi1-14 (Closes: #1052585)
+
+  [ Sylvestre Ledru ]
+  * Update of the package descriptions
+  * Fix lintian "spelling-error-in-changelog"
+
+ -- Sylvestre Ledru <sylvestre@debian.org>  Wed, 18 Sep 2024 13:51:34 +0200
+
+llvm-defaults (0.59~exp2) experimental; urgency=medium
+
+  [ chenli ]
+  * Fix the default selection on loong64
+
+  [ Gianfranco Costamagna ]
+  * Merge loong64 0.58~exp2 upload
+  * Merge entries for 0.58 and 0.58.1 from sid
+    (no renaming necessary for llvm-18)
+
+ -- Gianfranco Costamagna <locutusofborg@debian.org>  Sat, 30 Mar 2024 12:19:55 +0100
+
+llvm-defaults (0.59~exp1) experimental; urgency=medium
+
+  [ Matthias Klose ]
+  * Default to 18
+
+ -- Gianfranco Costamagna <locutusofborg@debian.org>  Wed, 28 Feb 2024 09:30:40 +0100
+
+llvm-defaults (0.58.1) unstable; urgency=medium
+
+  * Fix t64 dependency for libomp5.
+
+ -- Matthias Klose <doko@debian.org>  Sat, 30 Mar 2024 11:27:13 +0100
+
+llvm-defaults (0.58) unstable; urgency=medium
+
+  [ Sylvestre Ledru ]
+  * Update of the description of clang package
+
+  [ Matthias Klose ]
+  * Fix t64 dependencies.
+
+ -- Matthias Klose <doko@debian.org>  Fri, 29 Mar 2024 13:11:54 +0100
+
+llvm-defaults (0.58~exp1) experimental; urgency=medium
+
+  * Default to 17
+  * Fix duplicated short description lintian
+  * Make copyright file dep5 machine readable
+
+ -- Gianfranco Costamagna <locutusofborg@debian.org>  Thu, 14 Sep 2023 08:53:16 +0200
 
 llvm-defaults (0.57) unstable; urgency=medium
 
